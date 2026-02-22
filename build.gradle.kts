@@ -19,8 +19,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.ai:spring-ai-bom:1.1.0")
-        mavenBom("com.google.cloud:libraries-bom:26.55.0")
+        mavenBom("org.springframework.ai:spring-ai-bom:1.1.2")
         mavenBom("org.testcontainers:testcontainers-bom:2.0.3")
     }
 }
@@ -43,7 +42,7 @@ dependencies {
     implementation("org.springframework.ai:spring-ai-starter-vector-store-pgvector")
 
     // Google Cloud (Phase 2+)
-    implementation("com.google.cloud:google-cloud-storage")
+    implementation("com.google.cloud:google-cloud-storage:2.46.0")
 
     // PDF processing (Phase 2+)
     implementation("org.apache.pdfbox:pdfbox:3.0.6")
