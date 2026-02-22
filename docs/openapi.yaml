@@ -1,0 +1,554 @@
+openapi: 3.1.0
+info:
+  title: Classroom Clarity RAG API
+  version: 0.1.0
+  description: |
+    Semantic Q&A API for school documents, powered by Retrieval-Augmented Generation (RAG).
+
+    Upload PDF documents (handbooks, curriculum maps, policy documents), and ask
+    natural-language questions to get grounded answers with source citations.
+
+    ## Authentication
+    No authentication is required (not yet implemented).
+
+    ## Error Handling
+    All error responses use the same `ErrorResponse` schema with a machine-readable
+    `error` code and a human-readable `message`.
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+
+paths:
+  /api/v1/health:
+    get:
+      operationId: getHealth
+      summary: Health check
+      description: Returns the health status of the application and its dependencies.
+      tags: [Health]
+      responses:
+        "200":
+          description: Application is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: UP
+                components:
+                  database:
+                    status: UP
+                  embeddingModel:
+                    status: UNKNOWN
+                  chatModel:
+                    status: UNKNOWN
+                  storage:
+                    status: UNKNOWN
+        "503":
+          description: Application is unhealthy (e.g. database down)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /api/v1/documents:
+    post:
+      operationId: uploadDocument
+      summary: Upload and ingest a PDF document
+      description: |
+        Uploads a PDF file, extracts text, splits it into chunks, generates
+        vector embeddings, and stores everything in the database. The response
+        is returned after processing completes (synchronous).
+      tags: [Documents]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The PDF file to upload (max 50 MB).
+                title:
+                  type: string
+                  maxLength: 500
+                  description: Human-readable title. Defaults to the filename (without extension) if omitted.
+                description:
+                  type: string
+                  description: Optional description of the document.
+      responses:
+        "201":
+          description: Document uploaded and ingested successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentResponse"
+              example:
+                id: acc752f3-fd5d-4d25-83e0-fa208f0d437a
+                title: Student Handbook 2025-2026
+                description: null
+                filename: sample-handbook.pdf
+                fileSize: 2246
+                pageCount: 1
+                chunkCount: 1
+                status: COMPLETED
+                createdAt: "2026-02-22T21:52:00.934694Z"
+                updatedAt: "2026-02-22T21:52:02.086379Z"
+        "400":
+          description: Invalid file type (not a PDF) or file too large
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidFileType:
+                  summary: Non-PDF file uploaded
+                  value:
+                    error: INVALID_FILE_TYPE
+                    message: "Only PDF files are accepted. Received: text/plain"
+                    timestamp: "2026-02-22T21:52:00Z"
+                    path: /api/v1/documents
+                fileTooLarge:
+                  summary: File exceeds 50 MB limit
+                  value:
+                    error: FILE_TOO_LARGE
+                    message: Uploaded file exceeds the maximum allowed size of 50 MB.
+                    timestamp: "2026-02-22T21:52:00Z"
+                    path: /api/v1/documents
+        "500":
+          description: Document processing failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: PROCESSING_FAILED
+                message: Failed to extract text from PDF.
+                timestamp: "2026-02-22T21:52:00Z"
+                path: /api/v1/documents
+
+    get:
+      operationId: listDocuments
+      summary: List all documents
+      description: Returns a paginated list of all ingested documents, sorted by creation date (newest first) by default.
+      tags: [Documents]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: Zero-based page index.
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+          description: Number of items per page (max 100).
+        - name: sort
+          in: query
+          schema:
+            type: string
+            default: createdAt,desc
+          description: "Sort field and direction, e.g. `createdAt,desc` or `title,asc`."
+      responses:
+        "200":
+          description: Paginated list of documents
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentListResponse"
+              example:
+                content:
+                  - id: acc752f3-fd5d-4d25-83e0-fa208f0d437a
+                    title: Student Handbook 2025-2026
+                    description: null
+                    filename: sample-handbook.pdf
+                    fileSize: 2246
+                    pageCount: 1
+                    chunkCount: 1
+                    status: COMPLETED
+                    createdAt: "2026-02-22T21:52:00.934694Z"
+                    updatedAt: "2026-02-22T21:52:02.086379Z"
+                page:
+                  number: 0
+                  size: 20
+                  totalElements: 1
+                  totalPages: 1
+
+  /api/v1/documents/{id}:
+    get:
+      operationId: getDocument
+      summary: Get a document by ID
+      description: Returns metadata for a single document.
+      tags: [Documents]
+      parameters:
+        - $ref: "#/components/parameters/DocumentId"
+      responses:
+        "200":
+          description: Document found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentResponse"
+        "404":
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: DOCUMENT_NOT_FOUND
+                message: "No document found with id: acc752f3-fd5d-4d25-83e0-fa208f0d437a"
+                timestamp: "2026-02-22T21:52:00Z"
+                path: /api/v1/documents/acc752f3-fd5d-4d25-83e0-fa208f0d437a
+
+    delete:
+      operationId: deleteDocument
+      summary: Delete a document
+      description: Deletes a document, all its chunks and embeddings, and the stored PDF file.
+      tags: [Documents]
+      parameters:
+        - $ref: "#/components/parameters/DocumentId"
+      responses:
+        "204":
+          description: Document deleted successfully (no response body)
+        "404":
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: DOCUMENT_NOT_FOUND
+                message: "No document found with id: acc752f3-fd5d-4d25-83e0-fa208f0d437a"
+                timestamp: "2026-02-22T21:52:00Z"
+                path: /api/v1/documents/acc752f3-fd5d-4d25-83e0-fa208f0d437a
+
+  /api/v1/query:
+    post:
+      operationId: queryDocuments
+      summary: Ask a question
+      description: |
+        Submits a natural-language question. The system:
+        1. Embeds the question using text-embedding-005
+        2. Performs a cosine similarity search over document chunks using pgvector
+        3. Retrieves the most relevant chunks as context
+        4. Sends the question + context to Gemini 2.0 Flash
+        5. Returns a grounded answer with source citations
+      tags: [Query]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryRequest"
+            example:
+              question: What is the attendance policy?
+              topK: 5
+              similarityThreshold: 0.7
+              documentIds: []
+      responses:
+        "200":
+          description: Answer generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryResponse"
+              example:
+                answer: "Students are expected to attend all scheduled classes. Absences must be reported by a parent or guardian before 8:00 AM. Three unexcused absences in a semester will result in a parent conference. Medical absences require a doctor's note upon return. Students arriving more than 15 minutes late will be marked absent for that period (Source 1, page 1)."
+                sources:
+                  - documentId: acc752f3-fd5d-4d25-83e0-fa208f0d437a
+                    documentTitle: Student Handbook 2025-2026
+                    chunkId: 5baae3db-492b-44a0-a3ae-641e202571c2
+                    content: "Student Handbook 2025-2026 Chapter 1: Attendance Policy Students are expected to attend all scheduled classes..."
+                    pageNumber: 1
+                    similarityScore: 0.80
+                metadata:
+                  model: gemini-2.0-flash
+                  chunksRetrieved: 1
+                  chunksConsidered: 5
+                  processingTimeMs: 1588
+        "400":
+          description: Validation error (blank or missing question)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: VALIDATION_ERROR
+                message: "question: The 'question' field is required and must not be blank."
+                timestamp: "2026-02-22T21:52:00Z"
+                path: /api/v1/query
+        "422":
+          description: No relevant chunks found above the similarity threshold
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: NO_RELEVANT_CONTEXT
+                message: No document chunks met the similarity threshold of 0.7 for the given question. Try lowering the threshold or uploading more relevant documents.
+                timestamp: "2026-02-22T21:52:00Z"
+                path: /api/v1/query
+        "502":
+          description: LLM or embedding service error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: LLM_ERROR
+                message: Failed to generate response from the language model.
+                timestamp: "2026-02-22T21:52:00Z"
+                path: /api/v1/query
+
+components:
+  parameters:
+    DocumentId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: The document UUID.
+
+  schemas:
+    DocumentResponse:
+      type: object
+      description: Metadata for a single document.
+      required: [id, filename, fileSize, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique document identifier.
+        title:
+          type: string
+          description: Human-readable title.
+        description:
+          type: string
+          nullable: true
+          description: Optional description.
+        filename:
+          type: string
+          description: Original uploaded filename.
+        fileSize:
+          type: integer
+          format: int64
+          description: File size in bytes.
+        pageCount:
+          type: integer
+          nullable: true
+          description: Number of pages in the PDF.
+        chunkCount:
+          type: integer
+          nullable: true
+          description: Number of text chunks generated.
+        status:
+          $ref: "#/components/schemas/DocumentStatus"
+        createdAt:
+          type: string
+          format: date-time
+          description: When the document was uploaded (ISO 8601).
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last modification timestamp (ISO 8601).
+
+    DocumentStatus:
+      type: string
+      enum: [PROCESSING, COMPLETED, FAILED]
+      description: |
+        - `PROCESSING` — Upload received, extraction/embedding in progress
+        - `COMPLETED` — Successfully ingested with chunks and embeddings
+        - `FAILED` — Processing failed (check server logs)
+
+    DocumentListResponse:
+      type: object
+      description: Paginated list of documents.
+      required: [content, page]
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/DocumentResponse"
+        page:
+          $ref: "#/components/schemas/PageMetadata"
+
+    PageMetadata:
+      type: object
+      description: Pagination metadata.
+      required: [number, size, totalElements, totalPages]
+      properties:
+        number:
+          type: integer
+          description: Current page number (zero-based).
+        size:
+          type: integer
+          description: Page size.
+        totalElements:
+          type: integer
+          format: int64
+          description: Total number of documents.
+        totalPages:
+          type: integer
+          description: Total number of pages.
+
+    QueryRequest:
+      type: object
+      description: A natural-language question to ask against ingested documents.
+      required: [question]
+      properties:
+        question:
+          type: string
+          minLength: 1
+          description: The natural-language question to answer. Must not be blank.
+        topK:
+          type: integer
+          default: 5
+          minimum: 1
+          description: Maximum number of document chunks to retrieve.
+        similarityThreshold:
+          type: number
+          format: double
+          default: 0.7
+          minimum: 0.0
+          maximum: 1.0
+          description: Minimum cosine similarity score (0.0-1.0) for a chunk to be included.
+        documentIds:
+          type: array
+          default: []
+          items:
+            type: string
+            format: uuid
+          description: Restrict search to specific documents. Empty array searches all documents.
+
+    QueryResponse:
+      type: object
+      description: A grounded answer with source citations and metadata.
+      required: [answer, sources, metadata]
+      properties:
+        answer:
+          type: string
+          description: The generated answer grounded in the retrieved document chunks.
+        sources:
+          type: array
+          description: The document chunks used to generate the answer, ordered by relevance.
+          items:
+            $ref: "#/components/schemas/Source"
+        metadata:
+          $ref: "#/components/schemas/QueryMetadata"
+
+    Source:
+      type: object
+      description: A document chunk that was used as context for the answer.
+      required: [documentId, documentTitle, chunkId, content, similarityScore]
+      properties:
+        documentId:
+          type: string
+          format: uuid
+          description: The parent document ID.
+        documentTitle:
+          type: string
+          description: The parent document title.
+        chunkId:
+          type: string
+          format: uuid
+          description: The chunk ID.
+        content:
+          type: string
+          description: The full text content of this chunk.
+        pageNumber:
+          type: integer
+          nullable: true
+          description: The source page number in the PDF (1-indexed).
+        similarityScore:
+          type: number
+          format: double
+          description: Cosine similarity score (0.0-1.0) between the question and this chunk.
+
+    QueryMetadata:
+      type: object
+      description: Processing metadata for the query.
+      required: [model, chunksRetrieved, chunksConsidered, processingTimeMs]
+      properties:
+        model:
+          type: string
+          description: The LLM model used to generate the answer (e.g. `gemini-2.0-flash`).
+        chunksRetrieved:
+          type: integer
+          description: Number of chunks included in the answer's sources.
+        chunksConsidered:
+          type: integer
+          description: Number of chunks evaluated during similarity search (topK value).
+        processingTimeMs:
+          type: integer
+          format: int64
+          description: Total processing time in milliseconds.
+
+    HealthResponse:
+      type: object
+      description: Application health status.
+      required: [status, components]
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN]
+          description: Overall application status.
+        components:
+          type: object
+          description: Individual component health statuses.
+          properties:
+            database:
+              $ref: "#/components/schemas/ComponentHealth"
+            embeddingModel:
+              $ref: "#/components/schemas/ComponentHealth"
+            chatModel:
+              $ref: "#/components/schemas/ComponentHealth"
+            storage:
+              $ref: "#/components/schemas/ComponentHealth"
+
+    ComponentHealth:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN, UNKNOWN]
+          description: Component status.
+
+    ErrorResponse:
+      type: object
+      description: Standard error response returned by all error cases.
+      required: [error, message, timestamp, path]
+      properties:
+        error:
+          type: string
+          description: |
+            Machine-readable error code. One of:
+            - `VALIDATION_ERROR` — Request failed validation (400)
+            - `INVALID_FILE_TYPE` — Uploaded file is not a PDF (400)
+            - `FILE_TOO_LARGE` — File exceeds 50 MB limit (400)
+            - `DOCUMENT_NOT_FOUND` — Document ID does not exist (404)
+            - `NO_RELEVANT_CONTEXT` — No chunks above similarity threshold (422)
+            - `PROCESSING_FAILED` — Document ingestion failed (500)
+            - `LLM_ERROR` — LLM or embedding service error (502)
+            - `INTERNAL_ERROR` — Unexpected server error (500)
+        message:
+          type: string
+          description: Human-readable error description.
+        timestamp:
+          type: string
+          format: date-time
+          description: When the error occurred (ISO 8601).
+        path:
+          type: string
+          description: The request path that triggered the error.
