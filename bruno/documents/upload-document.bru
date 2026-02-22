@@ -1,0 +1,51 @@
+meta {
+  name: Upload Document
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/documents
+}
+
+body:multipart-form {
+  file: @sample-handbook.pdf
+  title: Student Handbook 2025-2026
+  ~description: Policies, procedures, and expectations for enrolled students
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("documentId", res.body.id);
+    bru.setVar("documentTitle", res.body.title);
+  }
+}
+
+tests {
+  test("should return 201 Created", function() {
+    expect(res.status).to.equal(201);
+  });
+
+  test("should return document with id", function() {
+    expect(res.body).to.have.property("id");
+    expect(res.body.id).to.be.a("string");
+  });
+
+  test("should have COMPLETED status", function() {
+    expect(res.body.status).to.equal("COMPLETED");
+  });
+
+  test("should have correct title", function() {
+    expect(res.body.title).to.equal("Student Handbook 2025-2026");
+  });
+
+  test("should have chunk and page counts", function() {
+    expect(res.body.chunkCount).to.be.above(0);
+    expect(res.body.pageCount).to.be.above(0);
+  });
+
+  test("should have timestamps", function() {
+    expect(res.body).to.have.property("createdAt");
+    expect(res.body).to.have.property("updatedAt");
+  });
+}

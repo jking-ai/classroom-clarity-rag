@@ -1,0 +1,32 @@
+meta {
+  name: Query - Dress Code
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host}}/api/v1/query
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body {
+  {
+    "question": "Can students wear hats inside the school building?",
+    "topK": 3,
+    "similarityThreshold": 0.0
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should have an answer with sources", function() {
+    expect(res.body.answer.length).to.be.above(0);
+    expect(res.body.sources.length).to.be.above(0);
+  });
+}

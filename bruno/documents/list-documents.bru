@@ -1,0 +1,32 @@
+meta {
+  name: List Documents
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/v1/documents
+}
+
+params:query {
+  page: 0
+  size: 10
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return paginated response", function() {
+    expect(res.body).to.have.property("content");
+    expect(res.body.content).to.be.an("array");
+  });
+
+  test("should have page metadata", function() {
+    expect(res.body).to.have.property("page");
+    expect(res.body.page).to.have.property("number");
+    expect(res.body.page).to.have.property("totalElements");
+    expect(res.body.page).to.have.property("totalPages");
+  });
+}

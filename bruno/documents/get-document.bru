@@ -1,0 +1,28 @@
+meta {
+  name: Get Document
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/api/v1/documents/{{documentId}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return correct document", function() {
+    expect(res.body.id).to.equal(bru.getVar("documentId"));
+  });
+
+  test("should have document metadata", function() {
+    expect(res.body).to.have.property("title");
+    expect(res.body).to.have.property("filename");
+    expect(res.body).to.have.property("fileSize");
+    expect(res.body).to.have.property("status");
+    expect(res.body).to.have.property("chunkCount");
+    expect(res.body).to.have.property("pageCount");
+  });
+}

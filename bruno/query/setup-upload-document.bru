@@ -1,0 +1,27 @@
+meta {
+  name: Setup - Upload Document
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/documents
+}
+
+body:multipart-form {
+  file: @sample-handbook.pdf
+  title: Query Test Handbook
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("queryDocumentId", res.body.id);
+  }
+}
+
+tests {
+  test("should upload successfully", function() {
+    expect(res.status).to.equal(201);
+    expect(res.body.status).to.equal("COMPLETED");
+  });
+}

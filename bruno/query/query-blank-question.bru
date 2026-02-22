@@ -1,0 +1,30 @@
+meta {
+  name: Query - Blank Question
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{host}}/api/v1/query
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body {
+  {
+    "question": "",
+    "topK": 5
+  }
+}
+
+tests {
+  test("should return 400", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("should return VALIDATION_ERROR", function() {
+    expect(res.body.error).to.equal("VALIDATION_ERROR");
+  });
+}
