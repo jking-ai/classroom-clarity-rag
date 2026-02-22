@@ -13,24 +13,32 @@ import java.util.UUID;
 public interface DocumentChunkRepository extends JpaRepository<DocumentChunk, UUID> {
 
     @Query(value = """
-            SELECT dc.* FROM document_chunks dc
+            SELECT dc.id, dc.document_id, dc.content, dc.page_number,
+                   dc.chunk_index, dc.token_count, dc.created_at,
+                   NULL::real[] AS embedding,
+                   1 - (dc.embedding <=> CAST(:embedding AS vector)) AS similarity_score
+            FROM document_chunks dc
             WHERE 1 - (dc.embedding <=> CAST(:embedding AS vector)) >= :threshold
             ORDER BY dc.embedding <=> CAST(:embedding AS vector)
             LIMIT :topK
             """, nativeQuery = true)
-    List<DocumentChunk> findSimilarChunks(
+    List<Object[]> findSimilarChunksRaw(
             @Param("embedding") String embedding,
             @Param("threshold") double threshold,
             @Param("topK") int topK);
 
     @Query(value = """
-            SELECT dc.* FROM document_chunks dc
+            SELECT dc.id, dc.document_id, dc.content, dc.page_number,
+                   dc.chunk_index, dc.token_count, dc.created_at,
+                   NULL::real[] AS embedding,
+                   1 - (dc.embedding <=> CAST(:embedding AS vector)) AS similarity_score
+            FROM document_chunks dc
             WHERE dc.document_id = ANY(CAST(:documentIds AS uuid[]))
               AND 1 - (dc.embedding <=> CAST(:embedding AS vector)) >= :threshold
             ORDER BY dc.embedding <=> CAST(:embedding AS vector)
             LIMIT :topK
             """, nativeQuery = true)
-    List<DocumentChunk> findSimilarChunksFilteredByDocuments(
+    List<Object[]> findSimilarChunksFilteredByDocumentsRaw(
             @Param("embedding") String embedding,
             @Param("threshold") double threshold,
             @Param("topK") int topK,
