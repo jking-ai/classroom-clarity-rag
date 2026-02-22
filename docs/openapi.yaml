@@ -9,7 +9,9 @@ info:
     natural-language questions to get grounded answers with source citations.
 
     ## Authentication
-    No authentication is required (not yet implemented).
+    All endpoints (except `/api/v1/health` and `/actuator/health`) require an API key
+    sent via the `X-API-Key` header. Requests without a valid key receive a `401 Unauthorized`
+    response.
 
     ## Error Handling
     All error responses use the same `ErrorResponse` schema with a machine-readable
@@ -19,6 +21,9 @@ servers:
   - url: http://localhost:8080
     description: Local development
 
+security:
+  - apiKey: []
+
 paths:
   /api/v1/health:
     get:
@@ -26,6 +31,7 @@ paths:
       summary: Health check
       description: Returns the health status of the application and its dependencies.
       tags: [Health]
+      security: []
       responses:
         "200":
           description: Application is healthy
@@ -97,6 +103,8 @@ paths:
                 status: COMPLETED
                 createdAt: "2026-02-22T21:52:00.934694Z"
                 updatedAt: "2026-02-22T21:52:02.086379Z"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "400":
           description: Invalid file type (not a PDF) or file too large
           content:
@@ -164,6 +172,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DocumentListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
               example:
                 content:
                   - id: acc752f3-fd5d-4d25-83e0-fa208f0d437a
@@ -197,6 +207,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DocumentResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "404":
           description: Document not found
           content:
@@ -219,6 +231,8 @@ paths:
       responses:
         "204":
           description: Document deleted successfully (no response body)
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "404":
           description: Document not found
           content:
@@ -275,6 +289,8 @@ paths:
                   chunksRetrieved: 1
                   chunksConsidered: 5
                   processingTimeMs: 1588
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "400":
           description: Validation error (blank or missing question)
           content:
@@ -310,6 +326,26 @@ paths:
                 path: /api/v1/query
 
 components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication. Send as the `X-API-Key` header.
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error: UNAUTHORIZED
+            message: Missing or invalid API key.
+            timestamp: "2026-02-22T21:52:00Z"
+            path: /api/v1/documents
+
   parameters:
     DocumentId:
       name: id
@@ -534,6 +570,7 @@ components:
           type: string
           description: |
             Machine-readable error code. One of:
+            - `UNAUTHORIZED` — Missing or invalid API key (401)
             - `VALIDATION_ERROR` — Request failed validation (400)
             - `INVALID_FILE_TYPE` — Uploaded file is not a PDF (400)
             - `FILE_TOO_LARGE` — File exceeds 50 MB limit (400)

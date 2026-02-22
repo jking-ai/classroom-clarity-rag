@@ -102,12 +102,21 @@ scripts/                      Shell scripts (start.sh)
 - Error responses always use the `ErrorResponse` schema (error code, message, timestamp, path).
 - Pagination uses `page` (zero-based), `size` (max 100), `sort` (field,direction).
 
+### Security
+
+- **API key authentication** — all endpoints except health probes require a valid `X-API-Key` header.
+- **Public endpoints** (no API key required): `/api/v1/health`, `/actuator/**`.
+- **CORS** — allowed origins are configured per profile via `app.security.allowed-origins`.
+- **Unauthorized requests** return `401` with the standard `ErrorResponse` schema and error code `UNAUTHORIZED`.
+- Configuration lives in `ApiSecurityProperties`, `ApiKeyAuthenticationFilter`, and `SecurityConfig` (all in `config/`).
+
 ### Error Handling
 
 All errors go through `GlobalExceptionHandler`. Each custom exception maps to a specific HTTP status and error code:
 
 | Exception | HTTP Status | Error Code |
 |-----------|-------------|------------|
+| *(missing/invalid API key)* | 401 | `UNAUTHORIZED` |
 | `DocumentNotFoundException` | 404 | `DOCUMENT_NOT_FOUND` |
 | `InvalidFileTypeException` | 400 | `INVALID_FILE_TYPE` |
 | `NoRelevantContextException` | 422 | `NO_RELEVANT_CONTEXT` |

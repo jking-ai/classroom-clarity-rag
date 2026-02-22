@@ -25,6 +25,11 @@ spring:
               model: text-embedding-005
 
 app:
+  security:
+    api-key: dev-local-key-changeme
+    allowed-origins:
+      - http://localhost:3000
+      - http://localhost:5173
   storage:
     local:
       upload-dir: data/uploads
