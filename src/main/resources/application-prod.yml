@@ -7,6 +7,21 @@ spring:
   jpa:
     show-sql: false
 
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GCP_PROJECT_ID}
+          location: ${GCP_LOCATION:us-central1}
+          chat:
+            options:
+              model: gemini-2.0-flash
+        embedding:
+          project-id: ${GCP_PROJECT_ID}
+          location: ${GCP_LOCATION:us-central1}
+          options:
+            model: text-embedding-005
+
 app:
   storage:
     gcs:
