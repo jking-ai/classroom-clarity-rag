@@ -1,5 +1,6 @@
 package com.jkingai.classroomclarity.controller;
 
+import com.jkingai.classroomclarity.TestApiKey;
 import com.jkingai.classroomclarity.config.TestAiConfig;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -58,7 +59,8 @@ class DocumentControllerUploadTest {
         mockMvc.perform(multipart("/api/v1/documents")
                         .file(file)
                         .param("title", "Test Handbook")
-                        .param("description", "A test"))
+                        .param("description", "A test")
+                        .header(TestApiKey.HEADER, TestApiKey.VALUE))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.title").value("Test Handbook"))
@@ -72,7 +74,8 @@ class DocumentControllerUploadTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "data.xlsx", "application/vnd.ms-excel", "not pdf".getBytes());
 
-        mockMvc.perform(multipart("/api/v1/documents").file(file))
+        mockMvc.perform(multipart("/api/v1/documents").file(file)
+                        .header(TestApiKey.HEADER, TestApiKey.VALUE))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("INVALID_FILE_TYPE"));
     }
@@ -83,7 +86,8 @@ class DocumentControllerUploadTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "student-handbook.pdf", "application/pdf", pdfBytes);
 
-        mockMvc.perform(multipart("/api/v1/documents").file(file))
+        mockMvc.perform(multipart("/api/v1/documents").file(file)
+                        .header(TestApiKey.HEADER, TestApiKey.VALUE))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("student-handbook"));
     }
