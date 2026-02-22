@@ -2,6 +2,11 @@ spring:
   application:
     name: classroom-clarity-rag
 
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 55MB
+
   jpa:
     hibernate:
       ddl-auto: validate
