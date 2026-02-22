@@ -1,6 +1,7 @@
 package com.jkingai.classroomclarity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jkingai.classroomclarity.TestApiKey;
 import com.jkingai.classroomclarity.config.TestAiConfig;
 import com.jkingai.classroomclarity.dto.QueryRequest;
 import com.jkingai.classroomclarity.model.Document;
@@ -79,6 +80,7 @@ class QueryControllerTest {
 
         mockMvc.perform(post("/api/v1/query")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(TestApiKey.HEADER, TestApiKey.VALUE)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.answer").isNotEmpty())
@@ -95,6 +97,7 @@ class QueryControllerTest {
 
         mockMvc.perform(post("/api/v1/query")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(TestApiKey.HEADER, TestApiKey.VALUE)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.error").value("NO_RELEVANT_CONTEXT"));
@@ -108,6 +111,7 @@ class QueryControllerTest {
 
         mockMvc.perform(post("/api/v1/query")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(TestApiKey.HEADER, TestApiKey.VALUE)
                         .content(body))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"));

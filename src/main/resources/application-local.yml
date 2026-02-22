@@ -17,6 +17,11 @@ spring:
       - org.springframework.ai.vectorstore.pgvector.autoconfigure.PgVectorStoreAutoConfiguration
 
 app:
+  security:
+    api-key: dev-local-key-changeme
+    allowed-origins:
+      - http://localhost:3000
+      - http://localhost:5173
   storage:
     local:
       upload-dir: data/uploads
