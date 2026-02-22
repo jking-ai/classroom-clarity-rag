@@ -19,8 +19,9 @@ spring:
         embedding:
           project-id: ${GCP_PROJECT_ID}
           location: ${GCP_LOCATION:us-central1}
-          options:
-            model: text-embedding-005
+          text:
+            options:
+              model: text-embedding-005
 
 app:
   storage:
