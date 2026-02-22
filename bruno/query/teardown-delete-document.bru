@@ -1,0 +1,15 @@
+meta {
+  name: Teardown - Delete Document
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{host}}/api/v1/documents/{{queryDocumentId}}
+}
+
+tests {
+  test("should return 204 No Content", function() {
+    expect(res.status).to.equal(204);
+  });
+}

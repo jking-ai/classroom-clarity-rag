@@ -1,0 +1,30 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/v1/health
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should have UP status", function() {
+    expect(res.body.status).to.equal("UP");
+  });
+
+  test("should have database component", function() {
+    expect(res.body.components).to.have.property("database");
+    expect(res.body.components.database.status).to.equal("UP");
+  });
+
+  test("should have all component keys", function() {
+    expect(res.body.components).to.have.property("embeddingModel");
+    expect(res.body.components).to.have.property("chatModel");
+    expect(res.body.components).to.have.property("storage");
+  });
+}

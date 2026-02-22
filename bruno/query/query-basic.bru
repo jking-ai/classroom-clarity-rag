@@ -1,0 +1,58 @@
+meta {
+  name: Query - Basic
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/api/v1/query
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body {
+  {
+    "question": "What is the cell phone policy?",
+    "topK": 5,
+    "similarityThreshold": 0.0
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should have an answer", function() {
+    expect(res.body).to.have.property("answer");
+    expect(res.body.answer).to.be.a("string");
+    expect(res.body.answer.length).to.be.above(0);
+  });
+
+  test("should have sources array", function() {
+    expect(res.body).to.have.property("sources");
+    expect(res.body.sources).to.be.an("array");
+    expect(res.body.sources.length).to.be.above(0);
+  });
+
+  test("sources should have required fields", function() {
+    const source = res.body.sources[0];
+    expect(source).to.have.property("documentId");
+    expect(source).to.have.property("documentTitle");
+    expect(source).to.have.property("chunkId");
+    expect(source).to.have.property("content");
+    expect(source).to.have.property("pageNumber");
+    expect(source).to.have.property("similarityScore");
+  });
+
+  test("should have metadata", function() {
+    expect(res.body).to.have.property("metadata");
+    expect(res.body.metadata).to.have.property("model");
+    expect(res.body.metadata).to.have.property("sourcesUsed");
+    expect(res.body.metadata).to.have.property("topK");
+    expect(res.body.metadata).to.have.property("processingTimeMs");
+    expect(res.body.metadata.processingTimeMs).to.be.a("number");
+  });
+}

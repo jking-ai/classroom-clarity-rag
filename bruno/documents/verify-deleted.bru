@@ -1,0 +1,19 @@
+meta {
+  name: Verify Document Deleted
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{host}}/api/v1/documents/{{documentId}}
+}
+
+tests {
+  test("should return 404 after deletion", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("should return DOCUMENT_NOT_FOUND", function() {
+    expect(res.body.error).to.equal("DOCUMENT_NOT_FOUND");
+  });
+}

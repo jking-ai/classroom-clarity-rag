@@ -1,0 +1,39 @@
+meta {
+  name: Query - Filter by Document
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/query
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body {
+  {
+    "question": "What is the grading policy?",
+    "topK": 3,
+    "similarityThreshold": 0.0,
+    "documentIds": ["{{queryDocumentId}}"]
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should have an answer", function() {
+    expect(res.body.answer.length).to.be.above(0);
+  });
+
+  test("all sources should be from the filtered document", function() {
+    const docId = bru.getVar("queryDocumentId");
+    res.body.sources.forEach(function(source) {
+      expect(source.documentId).to.equal(docId);
+    });
+  });
+}

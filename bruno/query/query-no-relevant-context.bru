@@ -1,0 +1,36 @@
+meta {
+  name: Query - No Relevant Context
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{host}}/api/v1/query
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body {
+  {
+    "question": "What is the meaning of life?",
+    "topK": 5,
+    "similarityThreshold": 0.99
+  }
+}
+
+tests {
+  test("should return 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("should return NO_RELEVANT_CONTEXT error", function() {
+    expect(res.body.error).to.equal("NO_RELEVANT_CONTEXT");
+  });
+
+  test("should have error message", function() {
+    expect(res.body).to.have.property("message");
+    expect(res.body.message.length).to.be.above(0);
+  });
+}
