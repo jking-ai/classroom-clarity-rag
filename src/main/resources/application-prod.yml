@@ -6,3 +6,8 @@ spring:
 
   jpa:
     show-sql: false
+
+app:
+  storage:
+    gcs:
+      bucket-name: ${GCS_BUCKET_NAME}
