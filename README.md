@@ -42,7 +42,8 @@ curl http://localhost:8080/api/v1/health
 
 ## Documentation
 
-- [Local Development Guide](docs/local-dev-guide.md) — setup, run, and test locally
+- [Local Development Guide](docs/local-dev-guide.md) — setup, run, and configure locally
+- [Local Testing Guide](docs/local-testing-guide.md) — automated tests, Bruno suite, curl examples, and reset procedures
 - [Project Overview](docs/README.md)
 - [Architecture](docs/architecture.md)
 - [API Contracts](docs/api-contracts.md)

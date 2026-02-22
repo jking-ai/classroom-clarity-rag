@@ -12,7 +12,7 @@ How to set up, run, and test Classroom Clarity RAG on your local machine.
 | Docker | 20+ | `docker --version` |
 | Docker Compose | v2+ | `docker compose version` |
 | curl | any | `curl --version` |
-| jq (optional) | any | `jq --version` |
+| Python 3 | 3.x | `python3 --version` (for JSON formatting) |
 
 > The Gradle wrapper (`./gradlew`) is included — you do not need Gradle installed separately.
 
@@ -100,7 +100,7 @@ You can also force a specific mode:
 ./scripts/start.sh local-ai    # Force real AI
 ```
 
-Press `Ctrl+C` to shut down both the app and database.
+Press `Ctrl+C` to shut down both the app and database. The script's cleanup trap handles stopping everything gracefully.
 
 ### Manual startup (step by step)
 
@@ -123,7 +123,7 @@ docker exec classroom-clarity-db pg_isready -U postgres
 ### Verify it's running
 
 ```bash
-curl -s http://localhost:8080/api/v1/health | jq .
+curl -s http://localhost:8080/api/v1/health | python3 -m json.tool
 ```
 
 Expected output:
@@ -142,49 +142,32 @@ Expected output:
 
 `database: UP` means everything is wired correctly.
 
+You can also check the Spring Boot Actuator endpoint:
+
+```bash
+curl -s http://localhost:8080/actuator/health | python3 -m json.tool
+```
+
 ---
 
 ## 3. Test the Full Pipeline
 
-### Step 1: Create a sample PDF
+### Step 1: Get a sample PDF
 
-You need a PDF to upload. Create a simple one or use any PDF you have. For a quick test, you can create one with Python:
+A sample PDF is included in the repository for testing:
 
-```bash
-pip install fpdf2
-
-python3 -c "
-from fpdf import FPDF
-pdf = FPDF()
-pdf.add_page()
-pdf.set_font('Helvetica', size=12)
-pdf.multi_cell(0, 10, '''Student Handbook 2025-2026
-
-Chapter 1: Attendance Policy
-Students are expected to attend all scheduled classes. Absences must be reported by a parent or guardian before 8:00 AM. Three unexcused absences in a semester will result in a parent conference. Medical absences require a doctor's note upon return.
-
-Chapter 2: Cell Phone Policy
-Cell phones must be turned off and stored in backpacks during class hours. Students may use phones during lunch and before/after school. Violations will result in confiscation until end of day. Repeated violations may result in phones being held until a parent picks them up.
-
-Chapter 3: Dress Code
-Students must wear the school uniform: navy blue or white polo shirts and khaki pants or skirts. Closed-toe shoes are required. Spirit wear T-shirts are allowed on Fridays. Hats and hoods may not be worn inside the building.
-
-Chapter 4: Grading Policy
-Grades are based on: homework (20%), classwork (30%), quizzes (20%), and tests (30%). Late homework loses 10 points per day, up to 3 days. After 3 days, late work receives a zero. Students scoring below 70% may be required to attend tutoring sessions.
-''')
-pdf.output('/tmp/sample-handbook.pdf')
-print('Created /tmp/sample-handbook.pdf')
-"
+```
+bruno/sample-handbook.pdf
 ```
 
-Or, if you don't have Python, any small PDF file will work.
+This contains a multi-chapter student handbook covering attendance, cell phone, dress code, grading, and cafeteria policies. You can also use any PDF you have.
 
 ### Step 2: Upload a document
 
 ```bash
 DOC_ID=$(curl -s -X POST http://localhost:8080/api/v1/documents \
-  -F "file=@/tmp/sample-handbook.pdf" \
-  -F "title=Student Handbook 2025-2026" | jq -r '.id')
+  -F "file=@bruno/sample-handbook.pdf" \
+  -F "title=Student Handbook 2025-2026" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
 echo "Document ID: $DOC_ID"
 ```
 
@@ -193,13 +176,13 @@ Expected: a UUID is printed and `status: COMPLETED` in the response.
 ### Step 3: List documents
 
 ```bash
-curl -s http://localhost:8080/api/v1/documents | jq .
+curl -s http://localhost:8080/api/v1/documents | python3 -m json.tool
 ```
 
 ### Step 4: Get a single document
 
 ```bash
-curl -s http://localhost:8080/api/v1/documents/$DOC_ID | jq .
+curl -s http://localhost:8080/api/v1/documents/$DOC_ID | python3 -m json.tool
 ```
 
 ### Step 5: Query the document
@@ -207,16 +190,20 @@ curl -s http://localhost:8080/api/v1/documents/$DOC_ID | jq .
 ```bash
 curl -s -X POST http://localhost:8080/api/v1/query \
   -H "Content-Type: application/json" \
-  -d '{
-    "question": "What is the cell phone policy?",
-    "topK": 5,
-    "similarityThreshold": 0.0
-  }' | jq .
+  -d '{"question": "What is the cell phone policy?"}' | python3 -m json.tool
 ```
 
 **With Real AI (`local-ai`):** The `answer` field will contain an actual grounded response from Gemini, citing the relevant handbook sections.
 
 **With Mock AI (`local`):** The `answer` will always be: _"Based on the provided context, here is a mock answer for local development."_ The `sources` array still shows which chunks matched.
+
+**Query parameters** (all optional):
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `topK` | `5` | Max number of chunks to retrieve |
+| `similarityThreshold` | `0.7` | Minimum cosine similarity (0.0-1.0). Lower values return more results. |
+| `documentIds` | `[]` | Filter to specific documents by UUID |
 
 You can also filter queries to specific documents:
 
@@ -228,7 +215,7 @@ curl -s -X POST http://localhost:8080/api/v1/query \
     \"topK\": 3,
     \"similarityThreshold\": 0.0,
     \"documentIds\": [\"$DOC_ID\"]
-  }" | jq .
+  }" | python3 -m json.tool
 ```
 
 ### Step 6: Delete a document
@@ -242,7 +229,7 @@ Expected: `HTTP Status: 204` (No Content). This removes the document, all its ch
 Verify it's gone:
 
 ```bash
-curl -s http://localhost:8080/api/v1/documents/$DOC_ID | jq .
+curl -s http://localhost:8080/api/v1/documents/$DOC_ID | python3 -m json.tool
 ```
 
 Expected: 404 with `DOCUMENT_NOT_FOUND` error.
@@ -335,14 +322,46 @@ ORDER BY chunk_index;
 
 ## 7. Resetting Local State
 
-```bash
-# Reset database (delete all data, keep schema)
-docker compose down -v
-docker compose up -d
-# Restart the app — Flyway will re-run migrations
+### Full reset (database + files)
 
-# Delete uploaded files
+Destroys the database volume and re-creates everything from scratch:
+
+```bash
+# Stop everything
+docker compose down -v          # -v removes the pgdata volume
+
+# Delete locally uploaded PDFs
 rm -rf data/uploads/*
+
+# Restart — Flyway will re-run all migrations
+docker compose up -d
+```
+
+### Quick reset (data only, keep schema)
+
+Keeps the container running and just clears the data:
+
+```bash
+docker exec -it classroom-clarity-db psql -U postgres -d classroomclarity -c "
+  DELETE FROM document_chunks;
+  DELETE FROM documents;
+"
+rm -rf data/uploads/*
+```
+
+### Restart the database container
+
+If the container is in a bad state:
+
+```bash
+docker compose down
+docker compose up -d
+```
+
+Verify it's healthy:
+
+```bash
+docker exec classroom-clarity-db pg_isready -U postgres
 ```
 
 ---
