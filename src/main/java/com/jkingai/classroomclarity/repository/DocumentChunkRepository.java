@@ -22,4 +22,17 @@ public interface DocumentChunkRepository extends JpaRepository<DocumentChunk, UU
             @Param("embedding") String embedding,
             @Param("threshold") double threshold,
             @Param("topK") int topK);
+
+    @Query(value = """
+            SELECT dc.* FROM document_chunks dc
+            WHERE dc.document_id = ANY(CAST(:documentIds AS uuid[]))
+              AND 1 - (dc.embedding <=> CAST(:embedding AS vector)) >= :threshold
+            ORDER BY dc.embedding <=> CAST(:embedding AS vector)
+            LIMIT :topK
+            """, nativeQuery = true)
+    List<DocumentChunk> findSimilarChunksFilteredByDocuments(
+            @Param("embedding") String embedding,
+            @Param("threshold") double threshold,
+            @Param("topK") int topK,
+            @Param("documentIds") UUID[] documentIds);
 }
