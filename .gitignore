@@ -31,3 +31,6 @@ Thumbs.db
 models/
 data/
 logs/
+
+# Firebase
+firebase-debug.log
