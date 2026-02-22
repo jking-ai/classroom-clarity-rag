@@ -4,7 +4,7 @@ This document defines three development phases with concrete deliverables and ac
 
 ---
 
-## Phase 1: Foundation
+## Phase 1: Foundation ✅ COMPLETE
 
 **Goal:** Project scaffolding, core dependencies wired, database schema in place, and a deployable (but mostly empty) application running locally.
 
@@ -14,8 +14,8 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 1.1 Project Scaffolding
 
-- [ ] Initialize a Spring Boot 3.5.x project using Gradle (Kotlin DSL) with Java 21.
-- [ ] Configure the following dependencies in `build.gradle.kts`:
+- [x] Initialize a Spring Boot 3.5.x project using Gradle (Kotlin DSL) with Java 21.
+- [x] Configure the following dependencies in `build.gradle.kts`:
   - `spring-boot-starter-web`
   - `spring-boot-starter-data-jpa`
   - `spring-boot-starter-validation`
@@ -27,8 +27,8 @@ This document defines three development phases with concrete deliverables and ac
   - `org.flywaydb:flyway-core` and `org.flywaydb:flyway-database-postgresql` (managed by Spring Boot BOM)
   - `org.postgresql:postgresql` (runtime)
   - Test dependencies: `spring-boot-starter-test`, `org.testcontainers:testcontainers-postgresql`, `org.testcontainers:testcontainers-junit-jupiter` (via Testcontainers BOM 2.0.x)
-- [ ] Create the package structure as defined in architecture.md.
-- [ ] Configure `application.yml` with profiles for `local` and `prod`.
+- [x] Create the package structure as defined in architecture.md.
+- [x] Configure `application.yml` with profiles for `local` and `prod`.
 
 **Acceptance Criteria:**
 - `./gradlew build` completes successfully (compilation, no test failures).
@@ -36,10 +36,10 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 1.2 Database Schema and Migrations
 
-- [ ] Write Flyway migration `V1__create_documents_table.sql` to create the `documents` table as specified in api-contracts.md.
-- [ ] Write Flyway migration `V2__create_document_chunks_table.sql` to create the `document_chunks` table with the `vector(768)` column.
-- [ ] Write Flyway migration `V3__create_hnsw_index.sql` to create the HNSW index on the embedding column.
-- [ ] Ensure `CREATE EXTENSION IF NOT EXISTS vector;` runs before table creation (can be in V1 or a V0 migration).
+- [x] Write Flyway migration `V1__create_documents_table.sql` to create the `documents` table as specified in api-contracts.md.
+- [x] Write Flyway migration `V2__create_document_chunks_table.sql` to create the `document_chunks` table with the `vector(768)` column.
+- [x] Write Flyway migration `V3__create_hnsw_index.sql` to create the HNSW index on the embedding column.
+- [x] Ensure `CREATE EXTENSION IF NOT EXISTS vector;` runs before table creation (can be in V1 or a V0 migration).
 
 **Acceptance Criteria:**
 - A local PostgreSQL instance with pgvector starts via Docker Compose or Testcontainers.
@@ -49,10 +49,10 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 1.3 JPA Entities and Repositories
 
-- [ ] Create `Document` JPA entity mapped to the `documents` table.
-- [ ] Create `DocumentChunk` JPA entity mapped to the `document_chunks` table. The `embedding` field should be mapped as `float[]` (Spring AI's pgvector store handles the vector type conversion).
-- [ ] Create `DocumentRepository` extending `JpaRepository<Document, UUID>`.
-- [ ] Create `DocumentChunkRepository` extending `JpaRepository<DocumentChunk, UUID>` with a custom `@Query` method for similarity search.
+- [x] Create `Document` JPA entity mapped to the `documents` table.
+- [x] Create `DocumentChunk` JPA entity mapped to the `document_chunks` table. The `embedding` field should be mapped as `float[]` (Spring AI's pgvector store handles the vector type conversion).
+- [x] Create `DocumentRepository` extending `JpaRepository<Document, UUID>`.
+- [x] Create `DocumentChunkRepository` extending `JpaRepository<DocumentChunk, UUID>` with a custom `@Query` method for similarity search.
 
 **Acceptance Criteria:**
 - Unit tests verify entity mapping (save and retrieve a `Document`, save and retrieve a `DocumentChunk`).
@@ -60,9 +60,9 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 1.4 Health Check Endpoint
 
-- [ ] Implement `GET /api/v1/health` as specified in api-contracts.md.
-- [ ] The endpoint checks database connectivity, and returns status for each component.
-- [ ] Embedding model and chat model checks can return `UNKNOWN` until those integrations are wired in Phase 2.
+- [x] Implement `GET /api/v1/health` as specified in api-contracts.md.
+- [x] The endpoint checks database connectivity, and returns status for each component.
+- [x] Embedding model and chat model checks can return `UNKNOWN` until those integrations are wired in Phase 2.
 
 **Acceptance Criteria:**
 - `curl http://localhost:8080/api/v1/health` returns a 200 response with `database.status: UP` when PostgreSQL is running.
@@ -70,8 +70,8 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 1.5 Docker Compose for Local Development
 
-- [ ] Create a `docker-compose.yml` with a PostgreSQL 16 service that has pgvector pre-installed (use `pgvector/pgvector:pg16` image).
-- [ ] Map port 5432 and configure default credentials matching `application-local.yml`.
+- [x] Create a `docker-compose.yml` with a PostgreSQL 16 service that has pgvector pre-installed (use `pgvector/pgvector:pg16` image).
+- [x] Map port 5432 and configure default credentials matching `application-local.yml`.
 
 **Acceptance Criteria:**
 - `docker compose up -d` starts PostgreSQL with pgvector.
@@ -83,7 +83,7 @@ This document defines three development phases with concrete deliverables and ac
 
 ---
 
-## Phase 2: Core Features
+## Phase 2: Core Features ✅ COMPLETE
 
 **Goal:** Full ETL pipeline (upload, extract, chunk, embed, store) and semantic search Q&A working end-to-end.
 
@@ -95,10 +95,10 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 2.1 Cloud Storage Integration
 
-- [ ] Create `StorageConfig.java` to configure a `Storage` bean for Google Cloud Storage.
-- [ ] Implement file upload logic: accept a `MultipartFile`, validate it is a PDF and under 50 MB, and upload it to a configured Cloud Storage bucket under a path like `documents/{documentId}/{filename}`.
-- [ ] Implement file deletion logic: delete the object from Cloud Storage given a storage path.
-- [ ] For local development, use a fake/local GCS emulator or simply store files to a local directory (configurable via profile).
+- [x] Create `StorageConfig.java` to configure a `Storage` bean for Google Cloud Storage.
+- [x] Implement file upload logic: accept a `MultipartFile`, validate it is a PDF and under 50 MB, and upload it to a configured Cloud Storage bucket under a path like `documents/{documentId}/{filename}`.
+- [x] Implement file deletion logic: delete the object from Cloud Storage given a storage path.
+- [x] For local development, use a fake/local GCS emulator or simply store files to a local directory (configurable via profile).
 
 **Acceptance Criteria:**
 - A PDF file can be uploaded to the configured storage location.
@@ -107,10 +107,10 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 2.2 PDF Text Extraction
 
-- [ ] Implement `PdfExtractionService` using Apache PDFBox.
-- [ ] Extract text page-by-page from a PDF `InputStream`.
-- [ ] Return a structured result containing the full text, per-page text, and the total page count.
-- [ ] Handle common PDF issues: encrypted PDFs (reject with a clear error), scanned/image-only PDFs (detect and warn that OCR is not supported).
+- [x] Implement `PdfExtractionService` using Apache PDFBox.
+- [x] Extract text page-by-page from a PDF `InputStream`.
+- [x] Return a structured result containing the full text, per-page text, and the total page count.
+- [x] Handle common PDF issues: encrypted PDFs (reject with a clear error), scanned/image-only PDFs (detect and warn that OCR is not supported).
 
 **Acceptance Criteria:**
 - A multi-page PDF produces extracted text with correct page number attribution.
@@ -119,11 +119,11 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 2.3 Text Chunking
 
-- [ ] Implement `ChunkingService` that splits extracted text into chunks.
-- [ ] Target chunk size: approximately 512 tokens (use a simple whitespace-based token approximation: ~4 characters per token).
-- [ ] Overlap: approximately 100 tokens between consecutive chunks.
-- [ ] Each chunk retains its source page number (or page range if it spans pages).
-- [ ] Each chunk has a `chunkIndex` indicating its position in the document.
+- [x] Implement `ChunkingService` that splits extracted text into chunks.
+- [x] Target chunk size: approximately 512 tokens (use a simple whitespace-based token approximation: ~4 characters per token).
+- [x] Overlap: approximately 100 tokens between consecutive chunks.
+- [x] Each chunk retains its source page number (or page range if it spans pages).
+- [x] Each chunk has a `chunkIndex` indicating its position in the document.
 
 **Acceptance Criteria:**
 - A 5000-word document produces roughly 10-12 chunks (depending on exact token boundaries).
@@ -133,10 +133,10 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 2.4 Embedding Generation and Storage
 
-- [ ] Configure Spring AI's Vertex AI embedding client to use `text-embedding-005`.
-- [ ] In `DocumentIngestionService`, orchestrate the full pipeline: receive uploaded file -> store in Cloud Storage -> extract text -> chunk text -> generate embeddings for each chunk -> store `Document` and `DocumentChunk` records in PostgreSQL.
-- [ ] Set `document.status` to `PROCESSING` at the start, `COMPLETED` on success, `FAILED` on error.
-- [ ] Update `document.chunk_count` and `document.page_count` after processing.
+- [x] Configure Spring AI's Vertex AI embedding client to use `text-embedding-005`.
+- [x] In `DocumentIngestionService`, orchestrate the full pipeline: receive uploaded file -> store in Cloud Storage -> extract text -> chunk text -> generate embeddings for each chunk -> store `Document` and `DocumentChunk` records in PostgreSQL.
+- [x] Set `document.status` to `PROCESSING` at the start, `COMPLETED` on success, `FAILED` on error.
+- [x] Update `document.chunk_count` and `document.page_count` after processing.
 
 **Acceptance Criteria:**
 - Uploading a PDF via `POST /api/v1/documents` triggers the full pipeline and returns a `201 Created` response with `status: COMPLETED`.
@@ -146,10 +146,10 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 2.5 Document Management Endpoints
 
-- [ ] Implement `GET /api/v1/documents` with pagination as specified in api-contracts.md.
-- [ ] Implement `GET /api/v1/documents/{id}` returning a single document.
-- [ ] Implement `DELETE /api/v1/documents/{id}` which deletes the document row (cascading to chunks), and deletes the PDF from Cloud Storage.
-- [ ] Return 404 with the standard error format for unknown document IDs.
+- [x] Implement `GET /api/v1/documents` with pagination as specified in api-contracts.md.
+- [x] Implement `GET /api/v1/documents/{id}` returning a single document.
+- [x] Implement `DELETE /api/v1/documents/{id}` which deletes the document row (cascading to chunks), and deletes the PDF from Cloud Storage.
+- [x] Return 404 with the standard error format for unknown document IDs.
 
 **Acceptance Criteria:**
 - After uploading two documents, `GET /api/v1/documents` returns both with correct metadata.
@@ -159,10 +159,10 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 2.6 Semantic Query Endpoint
 
-- [ ] Implement `QueryService` that: embeds the user's question using the same embedding model, performs a similarity search using the custom repository query, filters results by `similarityThreshold`, optionally filters by `documentIds`, retrieves the top-K chunks.
-- [ ] Build a prompt that includes the retrieved chunks as context and the user's question, then send it to Vertex AI Gemini 2.0 Flash via Spring AI's `ChatClient`. Consider using Spring AI 1.1's `RetrievalAugmentationAdvisor` for a modular RAG pipeline.
-- [ ] The prompt template should instruct the model to: answer based only on the provided context, cite which document and section the answer comes from, and say "I don't have enough information to answer that question" if the context is insufficient.
-- [ ] Implement `POST /api/v1/query` as specified in api-contracts.md.
+- [x] Implement `QueryService` that: embeds the user's question using the same embedding model, performs a similarity search using the custom repository query, filters results by `similarityThreshold`, optionally filters by `documentIds`, retrieves the top-K chunks.
+- [x] Build a prompt that includes the retrieved chunks as context and the user's question, then send it to Vertex AI Gemini 2.0 Flash via Spring AI's `ChatClient`. Consider using Spring AI 1.1's `RetrievalAugmentationAdvisor` for a modular RAG pipeline.
+- [x] The prompt template should instruct the model to: answer based only on the provided context, cite which document and section the answer comes from, and say "I don't have enough information to answer that question" if the context is insufficient.
+- [x] Implement `POST /api/v1/query` as specified in api-contracts.md.
 
 **Acceptance Criteria:**
 - After ingesting a sample handbook PDF, `POST /api/v1/query` with a relevant question returns a grounded answer with source citations.
@@ -172,12 +172,12 @@ This document defines three development phases with concrete deliverables and ac
 
 #### 2.7 Global Exception Handling
 
-- [ ] Implement `GlobalExceptionHandler` using `@ControllerAdvice`.
-- [ ] Map `DocumentNotFoundException` to 404.
-- [ ] Map `DocumentProcessingException` to 500 with `PROCESSING_FAILED`.
-- [ ] Map `MethodArgumentNotValidException` to 400 with `VALIDATION_ERROR`.
-- [ ] Map generic exceptions to 500 with a safe message (no stack traces in the response).
-- [ ] All error responses follow the standard format from api-contracts.md.
+- [x] Implement `GlobalExceptionHandler` using `@ControllerAdvice`.
+- [x] Map `DocumentNotFoundException` to 404.
+- [x] Map `DocumentProcessingException` to 500 with `PROCESSING_FAILED`.
+- [x] Map `MethodArgumentNotValidException` to 400 with `VALIDATION_ERROR`.
+- [x] Map generic exceptions to 500 with a safe message (no stack traces in the response).
+- [x] All error responses follow the standard format from api-contracts.md.
 
 **Acceptance Criteria:**
 - Invalid requests return properly formatted error JSON.
