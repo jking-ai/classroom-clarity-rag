@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 @Service
-@Profile({"local", "test"})
+@Profile({"local", "local-ai", "test"})
 public class LocalStorageService implements StorageService {
 
     private static final Logger log = LoggerFactory.getLogger(LocalStorageService.class);
