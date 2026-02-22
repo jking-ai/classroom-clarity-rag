@@ -24,6 +24,11 @@ spring:
               model: text-embedding-005
 
 app:
+  security:
+    api-key: ${API_KEY}
+    allowed-origins:
+      - ${FRONTEND_ORIGIN}
+    allowed-ips: ${ALLOWED_IPS:}
   storage:
     gcs:
       bucket-name: ${GCS_BUCKET_NAME}
