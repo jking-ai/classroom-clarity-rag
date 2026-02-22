@@ -19,7 +19,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.ai:spring-ai-bom:1.0.0")
+        mavenBom("org.springframework.ai:spring-ai-bom:1.1.0")
         mavenBom("com.google.cloud:libraries-bom:26.55.0")
         mavenBom("org.testcontainers:testcontainers-bom:2.0.3")
     }
@@ -46,7 +46,7 @@ dependencies {
     implementation("com.google.cloud:google-cloud-storage")
 
     // PDF processing (Phase 2+)
-    implementation("org.apache.pdfbox:pdfbox:3.0.4")
+    implementation("org.apache.pdfbox:pdfbox:3.0.6")
 
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
