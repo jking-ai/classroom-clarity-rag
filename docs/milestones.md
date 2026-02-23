@@ -273,20 +273,35 @@ This document defines three development phases with concrete deliverables and ac
 ## Milestone Dependency Graph
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'darkMode': true,
+  'background': '#0f1724',
+  'primaryColor': '#1a2538',
+  'primaryTextColor': '#e2e8f0',
+  'primaryBorderColor': '#2a3f5f',
+  'lineColor': '#4a90d9',
+  'secondaryColor': '#1e2d42',
+  'tertiaryColor': '#1e2d42',
+  'edgeLabelBackground': '#1a2538',
+  'clusterBkg': '#1e2d42',
+  'clusterBorder': '#2a3f5f',
+  'nodeTextColor': '#e2e8f0',
+  'titleColor': '#94a3b8'
+}}}%%
 flowchart LR
-    P1["Phase 1: Foundation"]
-    P2["Phase 2: Core Features"]
-    P3["Phase 3: Polish and Demo"]
+    P1["Phase 1: Foundation"]:::blue
+    P2["Phase 2: Core Features"]:::green
+    P3["Phase 3: Polish and Demo"]:::amber
 
     P1 --> P2 --> P3
 
     subgraph Phase1["Phase 1 Deliverables"]
         direction TB
-        S1[1.1 Scaffolding]
-        S2[1.2 DB Schema]
-        S3[1.3 Entities]
-        S4[1.4 Health Check]
-        S5[1.5 Docker Compose]
+        S1[1.1 Scaffolding]:::blue
+        S2[1.2 DB Schema]:::blue
+        S3[1.3 Entities]:::blue
+        S4[1.4 Health Check]:::blue
+        S5[1.5 Docker Compose]:::blue
         S1 --> S2 --> S3
         S1 --> S5
         S3 --> S4
@@ -294,13 +309,13 @@ flowchart LR
 
     subgraph Phase2["Phase 2 Deliverables"]
         direction TB
-        C1[2.1 Cloud Storage]
-        C2[2.2 PDF Extraction]
-        C3[2.3 Text Chunking]
-        C4[2.4 Embedding + Storage]
-        C5[2.5 Document CRUD]
-        C6[2.6 Query Endpoint]
-        C7[2.7 Exception Handling]
+        C1[2.1 Cloud Storage]:::green
+        C2[2.2 PDF Extraction]:::green
+        C3[2.3 Text Chunking]:::green
+        C4[2.4 Embedding + Storage]:::green
+        C5[2.5 Document CRUD]:::green
+        C6[2.6 Query Endpoint]:::green
+        C7[2.7 Exception Handling]:::green
         C1 --> C4
         C2 --> C4
         C3 --> C4
@@ -311,18 +326,28 @@ flowchart LR
 
     subgraph Phase3["Phase 3 Deliverables"]
         direction TB
-        D1[3.1 Container Image]
-        D2[3.2 Cloud Run Deploy]
-        D3[3.3 Validation]
-        D4[3.4 Integration Tests]
-        D5[3.5 Demo Script]
-        D6[3.6 Source README]
+        D1[3.1 Container Image]:::amber
+        D2[3.2 Cloud Run Deploy]:::amber
+        D3[3.3 Validation]:::amber
+        D4[3.4 Integration Tests]:::amber
+        D5[3.5 Demo Script]:::amber
+        D6[3.6 Source README]:::amber
         D1 --> D2
         D3
         D4
         D5
         D6
     end
+
+    style Phase1 fill:#1e2d42, stroke:#4a90d9, stroke-width:2px, color:#4a90d9
+    style Phase2 fill:#1e2d42, stroke:#34d399, stroke-width:2px, color:#34d399
+    style Phase3 fill:#1e2d42, stroke:#f59e0b, stroke-width:2px, color:#f59e0b
+
+    classDef blue   fill:#1a2538, stroke:#4a90d9, stroke-width:2px, color:#e2e8f0;
+    classDef green  fill:#1a2538, stroke:#34d399, stroke-width:2px, color:#e2e8f0;
+    classDef amber  fill:#1a2538, stroke:#f59e0b, stroke-width:2px, color:#e2e8f0;
+
+    linkStyle default stroke:#2a3f5f, stroke-width:1px
 ```
 
 ---

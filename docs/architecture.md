@@ -3,37 +3,52 @@
 ## High-Level Service Architecture
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'darkMode': true,
+  'background': '#0f1724',
+  'primaryColor': '#1a2538',
+  'primaryTextColor': '#e2e8f0',
+  'primaryBorderColor': '#2a3f5f',
+  'lineColor': '#4a90d9',
+  'secondaryColor': '#1e2d42',
+  'tertiaryColor': '#1e2d42',
+  'edgeLabelBackground': '#1a2538',
+  'clusterBkg': '#1e2d42',
+  'clusterBorder': '#2a3f5f',
+  'nodeTextColor': '#e2e8f0',
+  'titleColor': '#94a3b8'
+}}}%%
 flowchart TB
     subgraph Client
-        A[REST Client / Demo Script]
+        A[REST Client / Demo Script]:::blue
     end
 
     subgraph GCP["Google Cloud Platform"]
         subgraph CloudRun["Cloud Run"]
-            B[Spring Boot Application]
+            B[Spring Boot Application]:::green
             subgraph AppModules["Application Modules"]
-                C[Document Ingestion Service]
-                D[Query Service]
-                E[Document Management Service]
+                C[Document Ingestion Service]:::green
+                D[Query Service]:::green
+                E[Document Management Service]:::green
             end
         end
 
         subgraph Storage["Cloud Storage"]
-            F[PDF Upload Bucket]
+            F[PDF Upload Bucket]:::amber
         end
 
         subgraph Database["Cloud SQL"]
-            G[PostgreSQL 16 + pgvector]
+            G[PostgreSQL 16 + pgvector]:::slate
             subgraph Tables
-                H[documents]
-                I[document_chunks]
+                H[documents]:::slate
+                I[document_chunks]:::slate
             end
         end
     end
 
     subgraph External["External Services"]
-        J[Vertex AI Embedding API]
-        K[Vertex AI Gemini Chat API]
+        J[Vertex AI Embedding API]:::red
+        K[Vertex AI Gemini Chat API]:::red
     end
 
     A -- "POST /api/v1/documents" --> B
@@ -55,6 +70,23 @@ flowchart TB
 
     E -- "CRUD operations" --> G
     E -- "Delete PDF" --> F
+
+    style Client fill:#1e2d42, stroke:#4a90d9, stroke-width:2px, color:#4a90d9
+    style GCP fill:#141e2e, stroke:#2a3f5f, stroke-width:2px, color:#94a3b8
+    style CloudRun fill:#1e2d42, stroke:#34d399, stroke-width:1px, color:#34d399
+    style AppModules fill:#1a2538, stroke:#2a3f5f, stroke-width:1px, color:#64748b
+    style Storage fill:#1e2d42, stroke:#f59e0b, stroke-width:1px, color:#f59e0b
+    style Database fill:#1e2d42, stroke:#94a3b8, stroke-width:1px, color:#94a3b8
+    style Tables fill:#1a2538, stroke:#2a3f5f, stroke-width:1px, color:#64748b
+    style External fill:#1e2d42, stroke:#f87171, stroke-width:1px, color:#f87171
+
+    classDef blue   fill:#1a2538, stroke:#4a90d9, stroke-width:2px, color:#e2e8f0;
+    classDef green  fill:#1a2538, stroke:#34d399, stroke-width:2px, color:#e2e8f0;
+    classDef amber  fill:#1a2538, stroke:#f59e0b, stroke-width:2px, color:#e2e8f0;
+    classDef red    fill:#1a2538, stroke:#f87171, stroke-width:2px, color:#e2e8f0;
+    classDef slate  fill:#1a2538, stroke:#94a3b8, stroke-width:2px, color:#e2e8f0;
+
+    linkStyle default stroke:#2a3f5f, stroke-width:1px
 ```
 
 ### Flow Summary

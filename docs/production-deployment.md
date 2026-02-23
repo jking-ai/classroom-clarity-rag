@@ -7,38 +7,53 @@ How to deploy and operate the application on Google Cloud Platform.
 ## Physical Architecture
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'darkMode': true,
+  'background': '#0f1724',
+  'primaryColor': '#1a2538',
+  'primaryTextColor': '#e2e8f0',
+  'primaryBorderColor': '#2a3f5f',
+  'lineColor': '#4a90d9',
+  'secondaryColor': '#1e2d42',
+  'tertiaryColor': '#1e2d42',
+  'edgeLabelBackground': '#1a2538',
+  'clusterBkg': '#1e2d42',
+  'clusterBorder': '#2a3f5f',
+  'nodeTextColor': '#e2e8f0',
+  'titleColor': '#94a3b8'
+}}}%%
 flowchart TB
     subgraph Internet
-        Client[REST Client / Browser]
+        Client[REST Client / Browser]:::blue
     end
 
     subgraph GCP["Google Cloud Platform — <YOUR_GCP_PROJECT> / us-central1"]
         subgraph CloudRun["Cloud Run"]
-            CR[classroom-clarity-rag<br/>512 Mi · 1 vCPU · 0-2 instances]
+            CR[classroom-clarity-rag<br/>512 Mi · 1 vCPU · 0-2 instances]:::green
         end
 
         subgraph CloudSQL["Cloud SQL"]
-            PG[<YOUR_CLOUD_SQL_INSTANCE><br/>PostgreSQL 16 · db-f1-micro · 10 GB HDD]
-            DB[(classroom-clarity)]
+            PG[<YOUR_CLOUD_SQL_INSTANCE><br/>PostgreSQL 16 · db-f1-micro · 10 GB HDD]:::slate
+            DB[(classroom-clarity)]:::slate
             PG --- DB
         end
 
         subgraph GCS["Cloud Storage"]
-            Bucket[gs://<YOUR_GCS_BUCKET><br/>Standard · us-central1]
+            Bucket[gs://<YOUR_GCS_BUCKET><br/>Standard · us-central1]:::amber
         end
 
         subgraph AR["Artifact Registry"]
-            Repo[docker-repo<br/><REGION>-docker.pkg.dev/<YOUR_GCP_PROJECT>/<YOUR_ARTIFACT_REPO>]
+            Repo[docker-repo<br/><REGION>-docker.pkg.dev/<YOUR_GCP_PROJECT>/<YOUR_ARTIFACT_REPO>]:::purple
         end
 
         subgraph SM["Secret Manager"]
-            S1[<YOUR_API_KEY_SECRET>]
-            S2[<YOUR_DB_PASSWORD_SECRET>]
+            S1[<YOUR_API_KEY_SECRET>]:::purple
+            S2[<YOUR_DB_PASSWORD_SECRET>]:::purple
         end
 
         subgraph VertexAI["Vertex AI"]
-            Embed[text-embedding-005]
-            Chat[Gemini 2.0 Flash]
+            Embed[text-embedding-005]:::red
+            Chat[Gemini 2.0 Flash]:::red
         end
     end
 
@@ -49,6 +64,24 @@ flowchart TB
     CR -- "gRPC" --> Chat
     SM -.-> CR
     AR -.-> CR
+
+    style Internet fill:#1e2d42, stroke:#4a90d9, stroke-width:2px, color:#4a90d9
+    style GCP fill:#141e2e, stroke:#2a3f5f, stroke-width:2px, color:#94a3b8
+    style CloudRun fill:#1e2d42, stroke:#34d399, stroke-width:1px, color:#34d399
+    style CloudSQL fill:#1e2d42, stroke:#94a3b8, stroke-width:1px, color:#94a3b8
+    style GCS fill:#1e2d42, stroke:#f59e0b, stroke-width:1px, color:#f59e0b
+    style AR fill:#1e2d42, stroke:#a78bfa, stroke-width:1px, color:#a78bfa
+    style SM fill:#1e2d42, stroke:#a78bfa, stroke-width:1px, color:#a78bfa
+    style VertexAI fill:#1e2d42, stroke:#f87171, stroke-width:1px, color:#f87171
+
+    classDef blue   fill:#1a2538, stroke:#4a90d9, stroke-width:2px, color:#e2e8f0;
+    classDef green  fill:#1a2538, stroke:#34d399, stroke-width:2px, color:#e2e8f0;
+    classDef amber  fill:#1a2538, stroke:#f59e0b, stroke-width:2px, color:#e2e8f0;
+    classDef red    fill:#1a2538, stroke:#f87171, stroke-width:2px, color:#e2e8f0;
+    classDef purple fill:#1a2538, stroke:#a78bfa, stroke-width:2px, color:#e2e8f0;
+    classDef slate  fill:#1a2538, stroke:#94a3b8, stroke-width:2px, color:#e2e8f0;
+
+    linkStyle default stroke:#2a3f5f, stroke-width:1px
 ```
 
 ### Key Connections
