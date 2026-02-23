@@ -10,12 +10,14 @@ import com.jkingai.classroomclarity.repository.DocumentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +32,7 @@ public class DocumentIngestionService {
     private final EmbeddingModel embeddingModel;
     private final DocumentRepository documentRepository;
     private final TransactionTemplate transactionTemplate;
+    private final int embeddingBatchSize;
 
     public DocumentIngestionService(
             PdfExtractionService pdfExtractionService,
@@ -37,13 +40,15 @@ public class DocumentIngestionService {
             StorageService storageService,
             EmbeddingModel embeddingModel,
             DocumentRepository documentRepository,
-            PlatformTransactionManager transactionManager) {
+            PlatformTransactionManager transactionManager,
+            @Value("${app.chunking.embedding-batch-size:25}") int embeddingBatchSize) {
         this.pdfExtractionService = pdfExtractionService;
         this.chunkingService = chunkingService;
         this.storageService = storageService;
         this.embeddingModel = embeddingModel;
         this.documentRepository = documentRepository;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
+        this.embeddingBatchSize = embeddingBatchSize;
     }
 
     public Document ingest(MultipartFile file, String title, String description) {
@@ -86,7 +91,11 @@ public class DocumentIngestionService {
         log.info("Document '{}': {} pages, {} chunks", title, extraction.pageCount(), textChunks.size());
 
         List<String> chunkTexts = textChunks.stream().map(TextChunk::content).toList();
-        List<float[]> embeddings = embeddingModel.embed(chunkTexts);
+        List<float[]> embeddings = new ArrayList<>();
+        for (int i = 0; i < chunkTexts.size(); i += embeddingBatchSize) {
+            List<String> batch = chunkTexts.subList(i, Math.min(i + embeddingBatchSize, chunkTexts.size()));
+            embeddings.addAll(embeddingModel.embed(batch));
+        }
 
         for (int i = 0; i < textChunks.size(); i++) {
             TextChunk tc = textChunks.get(i);
