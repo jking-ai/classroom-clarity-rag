@@ -2,6 +2,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.5.6"
     id("io.spring.dependency-management") version "1.1.7"
+    id("com.google.cloud.tools.jib") version "3.4.4"
 }
 
 group = "com.jkingai"
@@ -34,6 +35,7 @@ dependencies {
 
     // Database
     runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("com.google.cloud.sql:postgres-socket-factory:1.24.1")
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
 
@@ -58,4 +60,24 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+jib {
+    from {
+        image = "eclipse-temurin:21-jre"
+    }
+    to {
+        image = "us-central1-docker.pkg.dev/jking-ai-labs/docker-repo/classroom-clarity-rag"
+        tags = setOf("latest", version.toString())
+    }
+    container {
+        mainClass = "com.jkingai.classroomclarity.ClassroomClarityApplication"
+        jvmFlags = listOf(
+            "-XX:+UseG1GC",
+            "-XX:MaxRAMPercentage=75.0"
+        )
+        ports = listOf("8080")
+        environment = mapOf("SPRING_PROFILES_ACTIVE" to "prod")
+        creationTime.set("USE_CURRENT_TIMESTAMP")
+    }
 }
