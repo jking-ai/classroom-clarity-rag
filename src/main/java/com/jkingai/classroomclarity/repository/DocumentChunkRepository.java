@@ -2,6 +2,7 @@ package com.jkingai.classroomclarity.repository;
 
 import com.jkingai.classroomclarity.model.DocumentChunk;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,10 @@ import java.util.UUID;
 
 @Repository
 public interface DocumentChunkRepository extends JpaRepository<DocumentChunk, UUID> {
+
+    @Modifying
+    @Query(value = "DELETE FROM document_chunks WHERE document_id = :documentId", nativeQuery = true)
+    void deleteByDocumentId(@Param("documentId") UUID documentId);
 
     @Query(value = """
             SELECT dc.id, dc.document_id, dc.content, dc.page_number,

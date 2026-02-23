@@ -2,6 +2,7 @@ package com.jkingai.classroomclarity.service;
 
 import com.jkingai.classroomclarity.exception.DocumentNotFoundException;
 import com.jkingai.classroomclarity.model.Document;
+import com.jkingai.classroomclarity.repository.DocumentChunkRepository;
 import com.jkingai.classroomclarity.repository.DocumentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,14 @@ public class DocumentManagementService {
     private static final Logger log = LoggerFactory.getLogger(DocumentManagementService.class);
 
     private final DocumentRepository documentRepository;
+    private final DocumentChunkRepository documentChunkRepository;
     private final StorageService storageService;
 
-    public DocumentManagementService(DocumentRepository documentRepository, StorageService storageService) {
+    public DocumentManagementService(DocumentRepository documentRepository,
+                                     DocumentChunkRepository documentChunkRepository,
+                                     StorageService storageService) {
         this.documentRepository = documentRepository;
+        this.documentChunkRepository = documentChunkRepository;
         this.storageService = storageService;
     }
 
@@ -43,7 +48,11 @@ public class DocumentManagementService {
             storageService.delete(document.getStoragePath());
         }
 
-        documentRepository.delete(document);
+        // Delete chunks via native query to avoid Hibernate loading pgvector
+        // columns (which causes PSQLException). DB has ON DELETE CASCADE as a
+        // safety net, but explicit deletion keeps intent clear.
+        documentChunkRepository.deleteByDocumentId(id);
+        documentRepository.deleteById(id);
         log.info("Deleted document: id={}, title={}", id, document.getTitle());
     }
 }
