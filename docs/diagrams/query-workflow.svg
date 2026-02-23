@@ -1,201 +1,202 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 860" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 900" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
   <defs>
-    <linearGradient id="qHeaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#0d47a1"/>
-      <stop offset="100%" stop-color="#1565c0"/>
-    </linearGradient>
-    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#f8f9fa"/>
-    </linearGradient>
     <filter id="cardShadow" x="-3%" y="-3%" width="106%" height="112%">
-      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.12"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.4"/>
     </filter>
     <filter id="iconShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/>
     </filter>
-    <!-- Flow arrow marker -->
     <marker id="flowArrow" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
-      <path d="M0,0 L10,4 L0,8" fill="#5f6368"/>
+      <path d="M0,0 L10,4 L0,8" fill="#475569"/>
     </marker>
     <marker id="flowArrowDown" markerWidth="8" markerHeight="10" refX="4" refY="10" orient="auto">
-      <path d="M0,0 L4,10 L8,0" fill="#5f6368"/>
+      <path d="M0,0 L4,10 L8,0" fill="#475569"/>
     </marker>
   </defs>
 
   <!-- Background -->
-  <rect width="1100" height="860" rx="12" fill="#f8f9fa"/>
+  <rect width="1100" height="900" rx="12" fill="#0f1724"/>
+
+  <!-- Subtle grid pattern -->
+  <pattern id="qgrid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a2538" stroke-width="0.5"/>
+  </pattern>
+  <rect width="1100" height="900" fill="url(#qgrid)" opacity="0.5"/>
 
   <!-- Header -->
-  <rect x="0" y="0" width="1100" height="80" rx="12" fill="url(#qHeaderGrad)"/>
-  <rect x="0" y="40" width="1100" height="40" fill="url(#qHeaderGrad)"/>
-  <text x="550" y="38" text-anchor="middle" fill="#fff" font-size="24" font-weight="600">Query Workflow</text>
-  <text x="550" y="62" text-anchor="middle" fill="#ffffffcc" font-size="13">How a question becomes a grounded answer with source citations</text>
+  <rect x="0" y="0" width="1100" height="80" rx="12" fill="#141e2e"/>
+  <rect x="0" y="40" width="1100" height="40" fill="#141e2e"/>
+  <line x1="0" y1="80" x2="1100" y2="80" stroke="#1e2d42" stroke-width="1"/>
+  <text x="550" y="38" text-anchor="middle" fill="#e2e8f0" font-size="24" font-weight="600">Query Workflow</text>
+  <text x="550" y="62" text-anchor="middle" fill="#64748b" font-size="13">How a question becomes a grounded answer with source citations</text>
 
-  <!-- === ROW 1: Question Input === -->
+  <!-- === ROW 1: Retrieval Phase === -->
+
+  <!-- Phase label: R -->
+  <g transform="translate(30, 110)">
+    <rect width="24" height="24" rx="5" fill="#f87171" opacity="0.15"/>
+    <text x="12" y="17" text-anchor="middle" fill="#f87171" font-size="13" font-weight="700">R</text>
+  </g>
+
   <!-- Step 1: User asks question -->
   <g transform="translate(60, 110)">
-    <rect width="260" height="130" rx="12" fill="url(#cardGrad)" stroke="#e0e0e0" stroke-width="1" filter="url(#cardShadow)"/>
-    <circle cx="30" cy="28" r="16" fill="#1a73e8" filter="url(#iconShadow)"/>
-    <text x="30" y="33" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">1</text>
-    <text x="54" y="33" fill="#1a73e8" font-size="14" font-weight="600">Ask a Question</text>
-    <line x1="15" y1="50" x2="245" y2="50" stroke="#e8eaed" stroke-width="1"/>
-    <text x="130" y="72" text-anchor="middle" fill="#333" font-size="11">User sends a natural-language</text>
-    <text x="130" y="87" text-anchor="middle" fill="#333" font-size="11">question via the API</text>
-    <rect x="25" y="97" width="210" height="22" rx="4" fill="#e8f0fe"/>
-    <text x="130" y="112" text-anchor="middle" fill="#1a73e8" font-size="10" font-weight="500">POST /api/v1/query</text>
+    <rect width="280" height="135" rx="10" fill="#1a2538" stroke="#1e2d42" stroke-width="1" filter="url(#cardShadow)"/>
+    <circle cx="30" cy="28" r="16" fill="#4a90d9" filter="url(#iconShadow)"/>
+    <text x="30" y="33" text-anchor="middle" fill="#0f1724" font-size="13" font-weight="700">1</text>
+    <text x="54" y="33" fill="#4a90d9" font-size="14" font-weight="600">Ask a Question</text>
+    <line x1="15" y1="52" x2="265" y2="52" stroke="#1e2d42" stroke-width="1"/>
+    <text x="140" y="76" text-anchor="middle" fill="#cbd5e1" font-size="11">User sends a natural-language</text>
+    <text x="140" y="93" text-anchor="middle" fill="#cbd5e1" font-size="11">question via the API</text>
+    <rect x="30" y="105" width="220" height="22" rx="4" fill="#1e2d42" stroke="#4a90d9" stroke-width="0.5"/>
+    <text x="140" y="120" text-anchor="middle" fill="#4a90d9" font-size="10" font-weight="500">POST /api/v1/query</text>
   </g>
 
   <!-- Arrow 1->2 -->
-  <line x1="340" y1="175" x2="408" y2="175" stroke="#5f6368" stroke-width="2" marker-end="url(#flowArrow)"/>
+  <line x1="360" y1="178" x2="408" y2="178" stroke="#475569" stroke-width="2" marker-end="url(#flowArrow)"/>
 
   <!-- Step 2: Embed Question -->
   <g transform="translate(420, 110)">
-    <rect width="260" height="130" rx="12" fill="url(#cardGrad)" stroke="#e0e0e0" stroke-width="1" filter="url(#cardShadow)"/>
-    <circle cx="30" cy="28" r="16" fill="#ea4335" filter="url(#iconShadow)"/>
-    <text x="30" y="33" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">2</text>
-    <text x="54" y="33" fill="#ea4335" font-size="14" font-weight="600">Embed Question</text>
-    <line x1="15" y1="50" x2="245" y2="50" stroke="#e8eaed" stroke-width="1"/>
-    <text x="130" y="72" text-anchor="middle" fill="#333" font-size="11">Convert the question into a</text>
-    <text x="130" y="87" text-anchor="middle" fill="#333" font-size="11">numerical vector (768 dimensions)</text>
-    <rect x="25" y="97" width="210" height="22" rx="4" fill="#fce8e6"/>
-    <text x="130" y="112" text-anchor="middle" fill="#ea4335" font-size="10" font-weight="500">Vertex AI text-embedding-005</text>
+    <rect width="280" height="135" rx="10" fill="#1a2538" stroke="#1e2d42" stroke-width="1" filter="url(#cardShadow)"/>
+    <circle cx="30" cy="28" r="16" fill="#f87171" filter="url(#iconShadow)"/>
+    <text x="30" y="33" text-anchor="middle" fill="#0f1724" font-size="13" font-weight="700">2</text>
+    <text x="54" y="33" fill="#f87171" font-size="14" font-weight="600">Embed Question</text>
+    <line x1="15" y1="52" x2="265" y2="52" stroke="#1e2d42" stroke-width="1"/>
+    <text x="140" y="76" text-anchor="middle" fill="#cbd5e1" font-size="11">Convert the question into a</text>
+    <text x="140" y="93" text-anchor="middle" fill="#cbd5e1" font-size="11">numerical vector (768 dimensions)</text>
+    <rect x="30" y="105" width="220" height="22" rx="4" fill="#1e2d42" stroke="#f87171" stroke-width="0.5"/>
+    <text x="140" y="120" text-anchor="middle" fill="#f87171" font-size="10" font-weight="500">Vertex AI text-embedding-005</text>
   </g>
 
   <!-- Arrow 2->3 -->
-  <line x1="700" y1="175" x2="768" y2="175" stroke="#5f6368" stroke-width="2" marker-end="url(#flowArrow)"/>
+  <line x1="720" y1="178" x2="768" y2="178" stroke="#475569" stroke-width="2" marker-end="url(#flowArrow)"/>
 
   <!-- Step 3: Similarity Search -->
   <g transform="translate(780, 110)">
-    <rect width="260" height="130" rx="12" fill="url(#cardGrad)" stroke="#e0e0e0" stroke-width="1" filter="url(#cardShadow)"/>
-    <circle cx="30" cy="28" r="16" fill="#fbbc04" filter="url(#iconShadow)"/>
-    <text x="30" y="33" text-anchor="middle" fill="#333" font-size="13" font-weight="700">3</text>
-    <text x="54" y="33" fill="#a16b00" font-size="14" font-weight="600">Similarity Search</text>
-    <line x1="15" y1="50" x2="245" y2="50" stroke="#e8eaed" stroke-width="1"/>
-    <text x="130" y="72" text-anchor="middle" fill="#333" font-size="11">Find the most relevant chunks</text>
-    <text x="130" y="87" text-anchor="middle" fill="#333" font-size="11">using cosine similarity (top-K)</text>
-    <rect x="25" y="97" width="210" height="22" rx="4" fill="#fef7e0"/>
-    <text x="130" y="112" text-anchor="middle" fill="#a16b00" font-size="10" font-weight="500">PostgreSQL pgvector HNSW index</text>
+    <rect width="280" height="135" rx="10" fill="#1a2538" stroke="#1e2d42" stroke-width="1" filter="url(#cardShadow)"/>
+    <circle cx="30" cy="28" r="16" fill="#f59e0b" filter="url(#iconShadow)"/>
+    <text x="30" y="33" text-anchor="middle" fill="#0f1724" font-size="13" font-weight="700">3</text>
+    <text x="54" y="33" fill="#f59e0b" font-size="14" font-weight="600">Similarity Search</text>
+    <line x1="15" y1="52" x2="265" y2="52" stroke="#1e2d42" stroke-width="1"/>
+    <text x="140" y="76" text-anchor="middle" fill="#cbd5e1" font-size="11">Find the most relevant chunks</text>
+    <text x="140" y="93" text-anchor="middle" fill="#cbd5e1" font-size="11">using cosine similarity (top-K)</text>
+    <rect x="30" y="105" width="220" height="22" rx="4" fill="#1e2d42" stroke="#f59e0b" stroke-width="0.5"/>
+    <text x="140" y="120" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="500">PostgreSQL pgvector HNSW index</text>
   </g>
 
   <!-- Arrow 3 down to 4 -->
-  <path d="M 910 260 L 910 300 L 730 300 L 730 340" stroke="#5f6368" stroke-width="2" fill="none" marker-end="url(#flowArrowDown)"/>
+  <path d="M 920 265 L 920 300 L 730 300 L 730 340" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#flowArrowDown)"/>
 
-  <!-- === ROW 2: Context Building === -->
-  <!-- Step 4: Relevance Filter -->
-  <g transform="translate(600, 350)">
-    <rect width="260" height="130" rx="12" fill="url(#cardGrad)" stroke="#e0e0e0" stroke-width="1" filter="url(#cardShadow)"/>
-    <circle cx="30" cy="28" r="16" fill="#9334e6" filter="url(#iconShadow)"/>
-    <text x="30" y="33" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">4</text>
-    <text x="54" y="33" fill="#9334e6" font-size="14" font-weight="600">Filter &amp; Rank</text>
-    <line x1="15" y1="50" x2="245" y2="50" stroke="#e8eaed" stroke-width="1"/>
-    <text x="130" y="72" text-anchor="middle" fill="#333" font-size="11">Discard chunks below similarity</text>
-    <text x="130" y="87" text-anchor="middle" fill="#333" font-size="11">threshold and rank the rest</text>
-    <rect x="25" y="97" width="210" height="22" rx="4" fill="#f3e8fd"/>
-    <text x="130" y="112" text-anchor="middle" fill="#9334e6" font-size="10" font-weight="500">Default: top 5 chunks, threshold 0.7</text>
+  <!-- === ROW 2: Augmentation Phase === -->
+
+  <!-- Phase label: A -->
+  <g transform="translate(30, 360)">
+    <rect width="24" height="24" rx="5" fill="#f59e0b" opacity="0.15"/>
+    <text x="12" y="17" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="700">A</text>
   </g>
 
-  <!-- Arrow 4->5 -->
-  <line x1="580" y1="415" x2="512" y2="415" stroke="#5f6368" stroke-width="2" marker-end="url(#flowArrow)" transform="rotate(180, 546, 415)"/>
+  <!-- Step 4: Relevance Filter -->
+  <g transform="translate(600, 355)">
+    <rect width="280" height="135" rx="10" fill="#1a2538" stroke="#1e2d42" stroke-width="1" filter="url(#cardShadow)"/>
+    <circle cx="30" cy="28" r="16" fill="#a78bfa" filter="url(#iconShadow)"/>
+    <text x="30" y="33" text-anchor="middle" fill="#0f1724" font-size="13" font-weight="700">4</text>
+    <text x="54" y="33" fill="#a78bfa" font-size="14" font-weight="600">Filter &amp; Rank</text>
+    <line x1="15" y1="52" x2="265" y2="52" stroke="#1e2d42" stroke-width="1"/>
+    <text x="140" y="76" text-anchor="middle" fill="#cbd5e1" font-size="11">Discard chunks below similarity</text>
+    <text x="140" y="93" text-anchor="middle" fill="#cbd5e1" font-size="11">threshold and rank the rest</text>
+    <rect x="30" y="105" width="220" height="22" rx="4" fill="#1e2d42" stroke="#a78bfa" stroke-width="0.5"/>
+    <text x="140" y="120" text-anchor="middle" fill="#a78bfa" font-size="10" font-weight="500">Default: top 5 chunks, threshold 0.7</text>
+  </g>
+
+  <!-- Arrow 4->5 (right to left) -->
+  <line x1="580" y1="422" x2="522" y2="422" stroke="#475569" stroke-width="2" marker-end="url(#flowArrow)" transform="rotate(180, 551, 422)"/>
 
   <!-- Step 5: Build Context -->
-  <g transform="translate(240, 350)">
-    <rect width="260" height="130" rx="12" fill="url(#cardGrad)" stroke="#e0e0e0" stroke-width="1" filter="url(#cardShadow)"/>
-    <circle cx="30" cy="28" r="16" fill="#34a853" filter="url(#iconShadow)"/>
-    <text x="30" y="33" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">5</text>
-    <text x="54" y="33" fill="#34a853" font-size="14" font-weight="600">Build Context</text>
-    <line x1="15" y1="50" x2="245" y2="50" stroke="#e8eaed" stroke-width="1"/>
-    <text x="130" y="72" text-anchor="middle" fill="#333" font-size="11">Assemble labeled source excerpts</text>
-    <text x="130" y="87" text-anchor="middle" fill="#333" font-size="11">with document titles and pages</text>
-    <rect x="15" y="97" width="230" height="22" rx="4" fill="#e6f4ea"/>
-    <text x="130" y="112" text-anchor="middle" fill="#34a853" font-size="10" font-weight="500">[Source 1] (Handbook, page 4) ...</text>
+  <g transform="translate(220, 355)">
+    <rect width="280" height="135" rx="10" fill="#1a2538" stroke="#1e2d42" stroke-width="1" filter="url(#cardShadow)"/>
+    <circle cx="30" cy="28" r="16" fill="#34d399" filter="url(#iconShadow)"/>
+    <text x="30" y="33" text-anchor="middle" fill="#0f1724" font-size="13" font-weight="700">5</text>
+    <text x="54" y="33" fill="#34d399" font-size="14" font-weight="600">Build Context</text>
+    <line x1="15" y1="52" x2="265" y2="52" stroke="#1e2d42" stroke-width="1"/>
+    <text x="140" y="76" text-anchor="middle" fill="#cbd5e1" font-size="11">Assemble labeled source excerpts</text>
+    <text x="140" y="93" text-anchor="middle" fill="#cbd5e1" font-size="11">with document titles and pages</text>
+    <rect x="20" y="105" width="240" height="22" rx="4" fill="#1e2d42" stroke="#34d399" stroke-width="0.5"/>
+    <text x="140" y="120" text-anchor="middle" fill="#34d399" font-size="10" font-weight="500">[Source 1] (Handbook, page 4) ...</text>
   </g>
 
   <!-- Arrow 5 down to 6 -->
-  <path d="M 370 500 L 370 540 L 550 540 L 550 580" stroke="#5f6368" stroke-width="2" fill="none" marker-end="url(#flowArrowDown)"/>
+  <path d="M 360 510 L 360 550 L 550 550 L 550 590" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#flowArrowDown)"/>
 
-  <!-- === ROW 3: Generation === -->
+  <!-- === ROW 3: Generation Phase === -->
+
+  <!-- Phase label: G -->
+  <g transform="translate(350, 605)">
+    <rect width="24" height="24" rx="5" fill="#34d399" opacity="0.15"/>
+    <text x="12" y="17" text-anchor="middle" fill="#34d399" font-size="13" font-weight="700">G</text>
+  </g>
+
   <!-- Step 6: LLM Generation -->
-  <g transform="translate(380, 590)">
-    <rect width="340" height="150" rx="12" fill="url(#cardGrad)" stroke="#1a73e8" stroke-width="2" filter="url(#cardShadow)"/>
-    <circle cx="30" cy="28" r="16" fill="#1a73e8" filter="url(#iconShadow)"/>
-    <text x="30" y="33" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">6</text>
-    <text x="54" y="33" fill="#1a73e8" font-size="14" font-weight="600">Generate Answer</text>
-    <line x1="15" y1="50" x2="325" y2="50" stroke="#e8eaed" stroke-width="1"/>
-    <text x="170" y="72" text-anchor="middle" fill="#333" font-size="11">LLM receives the context + question and</text>
-    <text x="170" y="87" text-anchor="middle" fill="#333" font-size="11">generates a grounded answer citing sources</text>
-    <rect x="25" y="97" width="290" height="22" rx="4" fill="#e8f0fe"/>
-    <text x="170" y="112" text-anchor="middle" fill="#1a73e8" font-size="10" font-weight="500">Vertex AI Gemini 2.0 Flash</text>
-    <!-- System prompt hint -->
-    <rect x="25" y="123" width="290" height="18" rx="3" fill="#f8f9fa"/>
-    <text x="170" y="135" text-anchor="middle" fill="#80868b" font-size="9" font-style="italic">"Answer based only on provided context. Reference sources."</text>
+  <g transform="translate(380, 600)">
+    <rect width="340" height="155" rx="10" fill="#1a2538" stroke="#4a90d9" stroke-width="1.5" filter="url(#cardShadow)"/>
+    <circle cx="30" cy="28" r="16" fill="#4a90d9" filter="url(#iconShadow)"/>
+    <text x="30" y="33" text-anchor="middle" fill="#0f1724" font-size="13" font-weight="700">6</text>
+    <text x="54" y="33" fill="#4a90d9" font-size="14" font-weight="600">Generate Answer</text>
+    <line x1="15" y1="52" x2="325" y2="52" stroke="#1e2d42" stroke-width="1"/>
+    <text x="170" y="76" text-anchor="middle" fill="#cbd5e1" font-size="11">LLM receives the context + question and</text>
+    <text x="170" y="93" text-anchor="middle" fill="#cbd5e1" font-size="11">generates a grounded answer citing sources</text>
+    <rect x="25" y="105" width="290" height="22" rx="4" fill="#1e2d42" stroke="#4a90d9" stroke-width="0.5"/>
+    <text x="170" y="120" text-anchor="middle" fill="#4a90d9" font-size="10" font-weight="500">Vertex AI Gemini 2.0 Flash</text>
+    <rect x="25" y="133" width="290" height="16" rx="3" fill="#141e2e"/>
+    <text x="170" y="144" text-anchor="middle" fill="#475569" font-size="9" font-style="italic">"Answer based only on provided context. Reference sources."</text>
   </g>
 
   <!-- Arrow 6 down to 7 -->
-  <line x1="550" y1="760" x2="550" y2="788" stroke="#5f6368" stroke-width="2" marker-end="url(#flowArrowDown)"/>
+  <line x1="550" y1="775" x2="550" y2="803" stroke="#475569" stroke-width="2" marker-end="url(#flowArrowDown)"/>
 
   <!-- Step 7: Return Response -->
-  <g transform="translate(260, 800)">
-    <rect width="580" height="46" rx="23" fill="#34a853" filter="url(#cardShadow)"/>
-    <circle cx="30" cy="23" r="14" fill="#fff"/>
-    <text x="30" y="28" text-anchor="middle" fill="#34a853" font-size="12" font-weight="700">7</text>
-    <text x="56" y="28" fill="#fff" font-size="14" font-weight="600">Return Answer + Source Citations + Metadata</text>
+  <g transform="translate(260, 815)">
+    <rect width="580" height="46" rx="23" fill="#1e2d42" stroke="#34d399" stroke-width="1.5" filter="url(#cardShadow)"/>
+    <circle cx="30" cy="23" r="14" fill="#34d399"/>
+    <text x="30" y="28" text-anchor="middle" fill="#0f1724" font-size="12" font-weight="700">7</text>
+    <text x="56" y="28" fill="#e2e8f0" font-size="14" font-weight="600">Return Answer + Source Citations + Metadata</text>
   </g>
 
-  <!-- === Decorative detail boxes on sides === -->
+  <!-- === Side detail boxes === -->
 
   <!-- Left detail: Query Request -->
-  <g transform="translate(30, 370)">
-    <rect width="195" height="95" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1" filter="url(#cardShadow)" opacity="0.9"/>
-    <text x="12" y="20" fill="#5f6368" font-size="10" font-weight="600">QUERY REQUEST</text>
-    <line x1="8" y1="28" x2="187" y2="28" stroke="#e8eaed" stroke-width="1"/>
-    <text x="12" y="44" fill="#333" font-size="9.5" font-family="monospace">question: "When is..."</text>
-    <text x="12" y="58" fill="#333" font-size="9.5" font-family="monospace">topK: 5</text>
-    <text x="12" y="72" fill="#333" font-size="9.5" font-family="monospace">similarityThreshold: 0.7</text>
-    <text x="12" y="86" fill="#333" font-size="9.5" font-family="monospace">documentIds: [] (all)</text>
+  <g transform="translate(30, 385)">
+    <rect width="175" height="95" rx="8" fill="#141e2e" stroke="#1e2d42" stroke-width="1" filter="url(#cardShadow)"/>
+    <text x="12" y="20" fill="#64748b" font-size="10" font-weight="600">QUERY REQUEST</text>
+    <line x1="8" y1="28" x2="167" y2="28" stroke="#1e2d42" stroke-width="1"/>
+    <text x="12" y="44" fill="#94a3b8" font-size="9.5" font-family="'SF Mono', 'Fira Code', monospace">question: "When is..."</text>
+    <text x="12" y="58" fill="#94a3b8" font-size="9.5" font-family="'SF Mono', 'Fira Code', monospace">topK: 5</text>
+    <text x="12" y="72" fill="#94a3b8" font-size="9.5" font-family="'SF Mono', 'Fira Code', monospace">threshold: 0.7</text>
+    <text x="12" y="86" fill="#94a3b8" font-size="9.5" font-family="'SF Mono', 'Fira Code', monospace">documentIds: [] (all)</text>
   </g>
 
   <!-- Right detail: Response shape -->
-  <g transform="translate(875, 590)">
-    <rect width="195" height="120" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1" filter="url(#cardShadow)" opacity="0.9"/>
-    <text x="12" y="20" fill="#5f6368" font-size="10" font-weight="600">RESPONSE SHAPE</text>
-    <line x1="8" y1="28" x2="187" y2="28" stroke="#e8eaed" stroke-width="1"/>
-    <text x="12" y="44" fill="#333" font-size="9.5" font-family="monospace">answer: "..."</text>
-    <text x="12" y="58" fill="#333" font-size="9.5" font-family="monospace">sources: [</text>
-    <text x="22" y="72" fill="#333" font-size="9.5" font-family="monospace">{ title, page,</text>
-    <text x="22" y="86" fill="#333" font-size="9.5" font-family="monospace">  content, score }</text>
-    <text x="12" y="100" fill="#333" font-size="9.5" font-family="monospace">]</text>
-    <text x="12" y="114" fill="#333" font-size="9.5" font-family="monospace">metadata: { model, ms }</text>
-  </g>
-
-  <!-- "R-A-G" annotation -->
-  <g transform="translate(30, 110)">
-    <!-- R -->
-    <rect x="0" y="6" width="22" height="22" rx="4" fill="#ea4335" opacity="0.15"/>
-    <text x="11" y="23" text-anchor="middle" fill="#ea4335" font-size="13" font-weight="700">R</text>
-  </g>
-  <g transform="translate(30, 350)">
-    <!-- A -->
-    <rect x="0" y="6" width="22" height="22" rx="4" fill="#fbbc04" opacity="0.15"/>
-    <text x="11" y="23" text-anchor="middle" fill="#a16b00" font-size="13" font-weight="700">A</text>
-  </g>
-  <g transform="translate(350, 590)">
-    <!-- G -->
-    <rect x="0" y="6" width="22" height="22" rx="4" fill="#34a853" opacity="0.15"/>
-    <text x="11" y="23" text-anchor="middle" fill="#34a853" font-size="13" font-weight="700">G</text>
+  <g transform="translate(890, 605)">
+    <rect width="180" height="120" rx="8" fill="#141e2e" stroke="#1e2d42" stroke-width="1" filter="url(#cardShadow)"/>
+    <text x="12" y="20" fill="#64748b" font-size="10" font-weight="600">RESPONSE SHAPE</text>
+    <line x1="8" y1="28" x2="172" y2="28" stroke="#1e2d42" stroke-width="1"/>
+    <text x="12" y="44" fill="#94a3b8" font-size="9.5" font-family="'SF Mono', 'Fira Code', monospace">answer: "..."</text>
+    <text x="12" y="58" fill="#94a3b8" font-size="9.5" font-family="'SF Mono', 'Fira Code', monospace">sources: [</text>
+    <text x="22" y="72" fill="#94a3b8" font-size="9.5" font-family="'SF Mono', 'Fira Code', monospace">{ title, page,</text>
+    <text x="22" y="86" fill="#94a3b8" font-size="9.5" font-family="'SF Mono', 'Fira Code', monospace">  content, score }</text>
+    <text x="12" y="100" fill="#94a3b8" font-size="9.5" font-family="'SF Mono', 'Fira Code', monospace">]</text>
+    <text x="12" y="114" fill="#94a3b8" font-size="9.5" font-family="'SF Mono', 'Fira Code', monospace">metadata: { model, ms }</text>
   </g>
 
   <!-- RAG legend -->
-  <g transform="translate(30, 800)">
-    <rect width="210" height="46" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1" opacity="0.9"/>
-    <circle cx="20" cy="15" r="6" fill="#ea4335"/>
-    <text x="32" y="19" fill="#333" font-size="10"><tspan font-weight="600">R</tspan>etrieval</text>
-    <circle cx="100" cy="15" r="6" fill="#fbbc04"/>
-    <text x="112" y="19" fill="#333" font-size="10"><tspan font-weight="600">A</tspan>ugmentation</text>
-    <circle cx="20" cy="35" r="6" fill="#34a853"/>
-    <text x="32" y="39" fill="#333" font-size="10"><tspan font-weight="600">G</tspan>eneration</text>
+  <g transform="translate(30, 815)">
+    <rect width="210" height="46" rx="8" fill="#141e2e" stroke="#1e2d42" stroke-width="1"/>
+    <circle cx="20" cy="15" r="6" fill="#f87171"/>
+    <text x="32" y="19" fill="#cbd5e1" font-size="10"><tspan font-weight="600" fill="#f87171">R</tspan>etrieval</text>
+    <circle cx="105" cy="15" r="6" fill="#f59e0b"/>
+    <text x="117" y="19" fill="#cbd5e1" font-size="10"><tspan font-weight="600" fill="#f59e0b">A</tspan>ugmentation</text>
+    <circle cx="20" cy="35" r="6" fill="#34d399"/>
+    <text x="32" y="39" fill="#cbd5e1" font-size="10"><tspan font-weight="600" fill="#34d399">G</tspan>eneration</text>
   </g>
 
   <!-- Footer -->
-  <text x="1070" y="852" text-anchor="end" fill="#80868b" font-size="10">Classroom Clarity RAG  |  Spring Boot / Spring AI / Vertex AI / pgvector</text>
+  <text x="1070" y="890" text-anchor="end" fill="#334155" font-size="10">Classroom Clarity RAG  |  Spring Boot / Spring AI / Vertex AI / pgvector</text>
 </svg>
