@@ -1,7 +1,6 @@
 # Gradle
 .gradle/
 build/
-!gradle/wrapper/gradle-wrapper.jar
 
 # IDE
 .idea/
@@ -18,6 +17,9 @@ build/
 *.jar
 *.war
 hs_err_pid*
+
+# Re-include Gradle wrapper jar (must come after *.jar)
+!gradle/wrapper/gradle-wrapper.jar
 
 # OS
 .DS_Store
