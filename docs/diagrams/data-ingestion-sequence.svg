@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 920" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1a73e8"/>
+      <stop offset="100%" stop-color="#4285f4"/>
+    </linearGradient>
+    <linearGradient id="stepGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8f9fa"/>
+      <stop offset="100%" stop-color="#e8eaed"/>
+    </linearGradient>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.1"/>
+    </filter>
+    <filter id="shadowSm" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="920" rx="12" fill="#ffffff"/>
+
+  <!-- Header -->
+  <rect x="0" y="0" width="1100" height="70" rx="12" fill="url(#headerGrad)"/>
+  <rect x="0" y="40" width="1100" height="30" fill="url(#headerGrad)"/>
+  <text x="550" y="42" text-anchor="middle" fill="#fff" font-size="22" font-weight="600">Document Ingestion Flow</text>
+  <text x="550" y="62" text-anchor="middle" fill="#ffffffcc" font-size="12">How school documents become searchable knowledge</text>
+
+  <!-- Actor lanes (lifelines) -->
+  <!-- Client -->
+  <rect x="60" y="90" width="120" height="44" rx="22" fill="#1a73e8" filter="url(#shadowSm)"/>
+  <text x="120" y="117" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">Client</text>
+  <line x1="120" y1="134" x2="120" y2="870" stroke="#1a73e8" stroke-width="2" stroke-dasharray="6 4" opacity="0.3"/>
+
+  <!-- Spring Boot API -->
+  <rect x="260" y="90" width="140" height="44" rx="22" fill="#34a853" filter="url(#shadowSm)"/>
+  <text x="330" y="117" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">Spring Boot API</text>
+  <line x1="330" y1="134" x2="330" y2="870" stroke="#34a853" stroke-width="2" stroke-dasharray="6 4" opacity="0.3"/>
+
+  <!-- File Storage -->
+  <rect x="460" y="90" width="130" height="44" rx="22" fill="#fbbc04" filter="url(#shadowSm)"/>
+  <text x="525" y="117" text-anchor="middle" fill="#333" font-size="13" font-weight="600">File Storage</text>
+  <line x1="525" y1="134" x2="525" y2="870" stroke="#fbbc04" stroke-width="2" stroke-dasharray="6 4" opacity="0.3"/>
+
+  <!-- Vertex AI -->
+  <rect x="660" y="90" width="130" height="44" rx="22" fill="#ea4335" filter="url(#shadowSm)"/>
+  <text x="725" y="117" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">Vertex AI</text>
+  <line x1="725" y1="134" x2="725" y2="870" stroke="#ea4335" stroke-width="2" stroke-dasharray="6 4" opacity="0.3"/>
+
+  <!-- PostgreSQL -->
+  <rect x="870" y="90" width="160" height="44" rx="22" fill="#5f6368" filter="url(#shadowSm)"/>
+  <text x="950" y="117" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">PostgreSQL + pgvector</text>
+  <line x1="950" y1="134" x2="950" y2="870" stroke="#5f6368" stroke-width="2" stroke-dasharray="6 4" opacity="0.3"/>
+
+  <!-- Step 1: Upload PDF -->
+  <g>
+    <rect x="30" y="155" width="1040" height="80" rx="8" fill="#e8f0fe" opacity="0.5"/>
+    <circle cx="52" cy="175" r="12" fill="#1a73e8"/>
+    <text x="52" y="179" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">1</text>
+    <text x="72" y="179" fill="#1a73e8" font-size="12" font-weight="600">Upload PDF</text>
+
+    <!-- Arrow: Client -> API -->
+    <line x1="140" y1="200" x2="310" y2="200" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrowBlue)"/>
+    <rect x="155" y="186" width="125" height="24" rx="4" fill="#fff" filter="url(#shadowSm)"/>
+    <text x="217" y="202" text-anchor="middle" fill="#333" font-size="10">POST /api/v1/documents</text>
+    <text x="217" y="225" text-anchor="middle" fill="#5f6368" font-size="10" font-style="italic">multipart/form-data (PDF)</text>
+  </g>
+
+  <!-- Step 2: Create DB record -->
+  <g>
+    <rect x="30" y="245" width="1040" height="80" rx="8" fill="#e6f4ea" opacity="0.5"/>
+    <circle cx="52" cy="265" r="12" fill="#34a853"/>
+    <text x="52" y="269" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">2</text>
+    <text x="72" y="269" fill="#34a853" font-size="12" font-weight="600">Create Document Record</text>
+
+    <line x1="350" y1="290" x2="930" y2="290" stroke="#34a853" stroke-width="2" marker-end="url(#arrowGreen)"/>
+    <rect x="520" y="276" width="200" height="24" rx="4" fill="#fff" filter="url(#shadowSm)"/>
+    <text x="620" y="292" text-anchor="middle" fill="#333" font-size="10">INSERT document (status: PROCESSING)</text>
+    <text x="620" y="315" text-anchor="middle" fill="#5f6368" font-size="10" font-style="italic">Committed immediately so progress is visible</text>
+  </g>
+
+  <!-- Step 3: Store file -->
+  <g>
+    <rect x="30" y="335" width="1040" height="80" rx="8" fill="#fef7e0" opacity="0.5"/>
+    <circle cx="52" cy="355" r="12" fill="#fbbc04"/>
+    <text x="52" y="359" text-anchor="middle" fill="#333" font-size="11" font-weight="700">3</text>
+    <text x="72" y="359" fill="#a16b00" font-size="12" font-weight="600">Store Raw PDF</text>
+
+    <line x1="350" y1="380" x2="505" y2="380" stroke="#fbbc04" stroke-width="2" marker-end="url(#arrowYellow)"/>
+    <rect x="370" y="366" width="115" height="24" rx="4" fill="#fff" filter="url(#shadowSm)"/>
+    <text x="427" y="382" text-anchor="middle" fill="#333" font-size="10">Save file to storage</text>
+    <text x="427" y="405" text-anchor="middle" fill="#5f6368" font-size="10" font-style="italic">Local disk or Cloud Storage</text>
+  </g>
+
+  <!-- Step 4: Extract text -->
+  <g>
+    <rect x="30" y="425" width="1040" height="80" rx="8" fill="#e8f0fe" opacity="0.5"/>
+    <circle cx="52" cy="445" r="12" fill="#1a73e8"/>
+    <text x="52" y="449" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">4</text>
+    <text x="72" y="449" fill="#1a73e8" font-size="12" font-weight="600">Extract Text from PDF</text>
+
+    <!-- Self-arrow on API -->
+    <path d="M 345 470 C 395 470, 395 455, 345 455" stroke="#1a73e8" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+    <rect x="365" y="448" width="150" height="36" rx="4" fill="#fff" filter="url(#shadowSm)"/>
+    <text x="440" y="462" text-anchor="middle" fill="#333" font-size="10">Apache PDFBox extracts</text>
+    <text x="440" y="476" text-anchor="middle" fill="#333" font-size="10">text page by page</text>
+  </g>
+
+  <!-- Step 5: Chunk text -->
+  <g>
+    <rect x="30" y="515" width="1040" height="80" rx="8" fill="#f3e8fd" opacity="0.5"/>
+    <circle cx="52" cy="535" r="12" fill="#9334e6"/>
+    <text x="52" y="539" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">5</text>
+    <text x="72" y="539" fill="#9334e6" font-size="12" font-weight="600">Chunk Text</text>
+
+    <path d="M 345 560 C 395 560, 395 545, 345 545" stroke="#9334e6" stroke-width="2" fill="none" marker-end="url(#arrowPurple)"/>
+    <rect x="365" y="535" width="185" height="36" rx="4" fill="#fff" filter="url(#shadowSm)"/>
+    <text x="457" y="549" text-anchor="middle" fill="#333" font-size="10">Sliding window: ~512 tokens</text>
+    <text x="457" y="563" text-anchor="middle" fill="#333" font-size="10">with ~100 token overlap</text>
+  </g>
+
+  <!-- Step 6: Generate embeddings -->
+  <g>
+    <rect x="30" y="605" width="1040" height="80" rx="8" fill="#fce8e6" opacity="0.5"/>
+    <circle cx="52" cy="625" r="12" fill="#ea4335"/>
+    <text x="52" y="629" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">6</text>
+    <text x="72" y="629" fill="#ea4335" font-size="12" font-weight="600">Generate Embeddings</text>
+
+    <line x1="350" y1="650" x2="705" y2="650" stroke="#ea4335" stroke-width="2" marker-end="url(#arrowRed)"/>
+    <rect x="420" y="636" width="180" height="24" rx="4" fill="#fff" filter="url(#shadowSm)"/>
+    <text x="510" y="652" text-anchor="middle" fill="#333" font-size="10">Batch embed (25 chunks/batch)</text>
+
+    <line x1="705" y1="665" x2="350" y2="665" stroke="#ea4335" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#arrowRedBack)"/>
+    <text x="527" y="680" text-anchor="middle" fill="#5f6368" font-size="10" font-style="italic">768-dim vectors (text-embedding-005)</text>
+  </g>
+
+  <!-- Step 7: Store chunks + vectors -->
+  <g>
+    <rect x="30" y="700" width="1040" height="80" rx="8" fill="#e8eaed" opacity="0.5"/>
+    <circle cx="52" cy="720" r="12" fill="#5f6368"/>
+    <text x="52" y="724" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">7</text>
+    <text x="72" y="724" fill="#5f6368" font-size="12" font-weight="600">Store Chunks + Vectors</text>
+
+    <line x1="350" y1="745" x2="930" y2="745" stroke="#5f6368" stroke-width="2" marker-end="url(#arrowGray)"/>
+    <rect x="505" y="731" width="215" height="24" rx="4" fill="#fff" filter="url(#shadowSm)"/>
+    <text x="612" y="747" text-anchor="middle" fill="#333" font-size="10">INSERT chunks with embeddings (CASCADE)</text>
+    <text x="612" y="770" text-anchor="middle" fill="#5f6368" font-size="10" font-style="italic">HNSW-indexed for fast similarity search</text>
+  </g>
+
+  <!-- Step 8: Response -->
+  <g>
+    <rect x="30" y="790" width="1040" height="70" rx="8" fill="#e6f4ea" opacity="0.5"/>
+    <circle cx="52" cy="810" r="12" fill="#34a853"/>
+    <text x="52" y="814" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">8</text>
+    <text x="72" y="814" fill="#34a853" font-size="12" font-weight="600">Return Response</text>
+
+    <line x1="310" y1="835" x2="140" y2="835" stroke="#34a853" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#arrowGreenBack)"/>
+    <rect x="155" y="821" width="130" height="24" rx="4" fill="#fff" filter="url(#shadowSm)"/>
+    <text x="220" y="837" text-anchor="middle" fill="#333" font-size="10">200 OK + document ID</text>
+  </g>
+
+  <!-- Footer note -->
+  <text x="550" y="900" text-anchor="middle" fill="#80868b" font-size="11">Classroom Clarity RAG  |  Java 21 / Spring Boot / Spring AI / Vertex AI / PostgreSQL + pgvector</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#1a73e8"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#34a853"/>
+    </marker>
+    <marker id="arrowGreenBack" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
+      <path d="M8,0 L0,3 L8,6" fill="#34a853"/>
+    </marker>
+    <marker id="arrowYellow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#fbbc04"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#ea4335"/>
+    </marker>
+    <marker id="arrowRedBack" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
+      <path d="M8,0 L0,3 L8,6" fill="#ea4335"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#5f6368"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#9334e6"/>
+    </marker>
+  </defs>
+</svg>
