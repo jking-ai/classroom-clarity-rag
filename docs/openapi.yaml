@@ -9,7 +9,7 @@ info:
     natural-language questions to get grounded answers with source citations.
 
     ## Authentication
-    All endpoints (except `/api/v1/health` and `/actuator/health`) require an API key
+    All endpoints (except `/api/v1/health`, `/api/v1/limits`, and `/actuator/health`) require an API key
     sent via the `X-API-Key` header. Requests without a valid key receive a `401 Unauthorized`
     response.
 
@@ -56,6 +56,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
+
+  /api/v1/limits:
+    get:
+      operationId: getLimits
+      summary: Get system limits
+      description: Returns current system limits including document capacity, retention policy, and rate limit configuration. This endpoint is public and does not require authentication.
+      tags: [System]
+      security: []
+      responses:
+        "200":
+          description: System limits retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LimitsResponse"
+              example:
+                documents:
+                  currentCount: 3
+                  maxCount: 100
+                  retentionDays: 90
+                rateLimit:
+                  requestsPerMinute: 60
+                  queryRequestsPerMinute: 6
 
   /api/v1/documents:
     post:
@@ -126,6 +149,19 @@ paths:
                     message: Uploaded file exceeds the maximum allowed size of 50 MB.
                     timestamp: "2026-02-22T21:52:00Z"
                     path: /api/v1/documents
+        "409":
+          description: Document upload limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: DOCUMENT_LIMIT_EXCEEDED
+                message: "Document limit reached. Maximum allowed: 100. Delete existing documents before uploading new ones."
+                timestamp: "2026-02-22T21:52:00Z"
+                path: /api/v1/documents
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
         "500":
           description: Document processing failed
           content:
@@ -191,6 +227,8 @@ paths:
                   totalPages: 1
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
 
   /api/v1/documents/{id}:
     get:
@@ -209,6 +247,8 @@ paths:
                 $ref: "#/components/schemas/DocumentResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
         "404":
           description: Document not found
           content:
@@ -233,6 +273,8 @@ paths:
           description: Document deleted successfully (no response body)
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
         "404":
           description: Document not found
           content:
@@ -291,6 +333,8 @@ paths:
                   processingTimeMs: 1588
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
         "400":
           description: Validation error (blank or missing question)
           content:
@@ -345,6 +389,24 @@ components:
             message: Missing or invalid API key.
             timestamp: "2026-02-22T21:52:00Z"
             path: /api/v1/documents
+
+    RateLimitExceeded:
+      description: Too many requests — per-IP rate limit exceeded
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds to wait before retrying.
+          example: 60
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error: RATE_LIMIT_EXCEEDED
+            message: Too many requests. Please try again later.
+            timestamp: "2026-02-22T21:52:00Z"
+            path: /api/v1/query
 
   parameters:
     DocumentId:
@@ -561,6 +623,44 @@ components:
           enum: [UP, DOWN, UNKNOWN]
           description: Component status.
 
+    LimitsResponse:
+      type: object
+      description: System limits and current usage information.
+      required: [documents, rateLimit]
+      properties:
+        documents:
+          $ref: "#/components/schemas/DocumentLimits"
+        rateLimit:
+          $ref: "#/components/schemas/RateLimits"
+
+    DocumentLimits:
+      type: object
+      description: Document storage limits and current usage.
+      required: [currentCount, maxCount, retentionDays]
+      properties:
+        currentCount:
+          type: integer
+          format: int64
+          description: Current number of documents stored.
+        maxCount:
+          type: integer
+          description: Maximum number of documents allowed.
+        retentionDays:
+          type: integer
+          description: Number of days before documents are automatically deleted.
+
+    RateLimits:
+      type: object
+      description: Rate limit configuration.
+      required: [requestsPerMinute, queryRequestsPerMinute]
+      properties:
+        requestsPerMinute:
+          type: integer
+          description: Maximum general API requests per minute per IP.
+        queryRequestsPerMinute:
+          type: integer
+          description: Maximum query requests per minute per IP.
+
     ErrorResponse:
       type: object
       description: Standard error response returned by all error cases.
@@ -575,6 +675,8 @@ components:
             - `INVALID_FILE_TYPE` — Uploaded file is not a PDF (400)
             - `FILE_TOO_LARGE` — File exceeds 50 MB limit (400)
             - `DOCUMENT_NOT_FOUND` — Document ID does not exist (404)
+            - `DOCUMENT_LIMIT_EXCEEDED` — Document upload limit reached (409)
+            - `RATE_LIMIT_EXCEEDED` — Per-IP rate limit exceeded (429)
             - `NO_RELEVANT_CONTEXT` — No chunks above similarity threshold (422)
             - `PROCESSING_FAILED` — Document ingestion failed (500)
             - `LLM_ERROR` — LLM or embedding service error (502)

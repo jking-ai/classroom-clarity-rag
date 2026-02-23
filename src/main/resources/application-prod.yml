@@ -16,6 +16,7 @@ spring:
           chat:
             options:
               model: gemini-2.0-flash
+              max-output-tokens: 1024
         embedding:
           project-id: ${GCP_PROJECT_ID}
           location: ${GCP_LOCATION:us-central1}
@@ -24,6 +25,9 @@ spring:
               model: text-embedding-005
 
 app:
+  documents:
+    max-count: ${DOCUMENT_MAX_COUNT:10}
+    retention-days: ${DOCUMENT_RETENTION_DAYS:1}
   security:
     api-key: ${API_KEY}
     allowed-origins:

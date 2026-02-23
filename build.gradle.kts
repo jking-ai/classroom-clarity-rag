@@ -50,6 +50,9 @@ dependencies {
     // PDF processing (Phase 2+)
     implementation("org.apache.pdfbox:pdfbox:3.0.6")
 
+    // Rate limiting
+    implementation("com.bucket4j:bucket4j-core:8.10.1")
+
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

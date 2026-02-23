@@ -24,14 +24,18 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties(ApiSecurityProperties.class)
+@EnableConfigurationProperties({ApiSecurityProperties.class, DocumentProperties.class, RateLimitProperties.class})
 public class SecurityConfig {
 
     private final ApiSecurityProperties securityProperties;
+    private final RateLimitProperties rateLimitProperties;
     private final ObjectMapper objectMapper;
 
-    public SecurityConfig(ApiSecurityProperties securityProperties, ObjectMapper objectMapper) {
+    public SecurityConfig(ApiSecurityProperties securityProperties,
+                          RateLimitProperties rateLimitProperties,
+                          ObjectMapper objectMapper) {
         this.securityProperties = securityProperties;
+        this.rateLimitProperties = rateLimitProperties;
         this.objectMapper = objectMapper;
     }
 
@@ -42,14 +46,18 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/health").permitAll()
+                        .requestMatchers("/api/v1/health", "/api/v1/limits").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
-                        new ApiKeyAuthenticationFilter(securityProperties.apiKey()),
+                        new RateLimitFilter(rateLimitProperties, objectMapper),
                         UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterAfter(
+                        new ApiKeyAuthenticationFilter(securityProperties.apiKey()),
+                        RateLimitFilter.class
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(unauthorizedEntryPoint())

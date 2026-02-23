@@ -1,9 +1,12 @@
 package com.jkingai.classroomclarity.controller;
 
+import com.jkingai.classroomclarity.config.DocumentProperties;
 import com.jkingai.classroomclarity.dto.DocumentListResponse;
 import com.jkingai.classroomclarity.dto.DocumentUploadResponse;
+import com.jkingai.classroomclarity.exception.DocumentLimitExceededException;
 import com.jkingai.classroomclarity.exception.InvalidFileTypeException;
 import com.jkingai.classroomclarity.model.Document;
+import com.jkingai.classroomclarity.repository.DocumentRepository;
 import com.jkingai.classroomclarity.service.DocumentIngestionService;
 import com.jkingai.classroomclarity.service.DocumentManagementService;
 import org.springframework.data.domain.Page;
@@ -24,11 +27,17 @@ public class DocumentController {
 
     private final DocumentIngestionService ingestionService;
     private final DocumentManagementService managementService;
+    private final DocumentRepository documentRepository;
+    private final DocumentProperties documentProperties;
 
     public DocumentController(DocumentIngestionService ingestionService,
-                              DocumentManagementService managementService) {
+                              DocumentManagementService managementService,
+                              DocumentRepository documentRepository,
+                              DocumentProperties documentProperties) {
         this.ingestionService = ingestionService;
         this.managementService = managementService;
+        this.documentRepository = documentRepository;
+        this.documentProperties = documentProperties;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -36,6 +45,11 @@ public class DocumentController {
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "description", required = false) String description) {
+
+        long count = documentRepository.count();
+        if (count >= documentProperties.maxCount()) {
+            throw new DocumentLimitExceededException(documentProperties.maxCount());
+        }
 
         if (file.isEmpty()) {
             throw new InvalidFileTypeException("empty");

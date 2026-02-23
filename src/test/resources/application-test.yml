@@ -12,3 +12,5 @@ app:
     api-key: test-api-key
     allowed-origins:
       - "*"
+  rate-limit:
+    enabled: false

@@ -17,6 +17,15 @@ spring:
     locations: classpath:db/migration
 
 app:
+  documents:
+    max-count: 10
+    retention-days: 7
+  rate-limit:
+    enabled: true
+    requests-per-minute: 60
+    burst-capacity: 10
+    query-requests-per-minute: 6
+    query-burst-capacity: 3
   security:
     api-key: ${API_KEY:dev-local-key-changeme}
     allowed-origins:

@@ -23,6 +23,13 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of("DOCUMENT_NOT_FOUND", ex.getMessage(), request.getRequestURI()));
     }
 
+    @ExceptionHandler(DocumentLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleDocumentLimitExceeded(
+            DocumentLimitExceededException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.of("DOCUMENT_LIMIT_EXCEEDED", ex.getMessage(), request.getRequestURI()));
+    }
+
     @ExceptionHandler(InvalidFileTypeException.class)
     public ResponseEntity<ErrorResponse> handleInvalidFileType(
             InvalidFileTypeException ex, HttpServletRequest request) {
