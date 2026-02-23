@@ -172,8 +172,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DocumentListResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
               example:
                 content:
                   - id: acc752f3-fd5d-4d25-83e0-fa208f0d437a
@@ -191,6 +189,8 @@ paths:
                   size: 20
                   totalElements: 1
                   totalPages: 1
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
   /api/v1/documents/{id}:
     get:
