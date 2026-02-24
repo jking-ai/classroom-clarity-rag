@@ -126,7 +126,7 @@ flowchart TB
 
 | Variable | Value | Source |
 |----------|-------|--------|
-| `SPRING_PROFILES_ACTIVE` | `prod` | Set in container image (Jib) |
+| `SPRING_PROFILES_ACTIVE` | `prod` | Env var (set in container image by Jib, or as runtime env var for source deploys) |
 | `DATABASE_URL` | `jdbc:postgresql:///classroom-clarity?cloudSqlInstance=<YOUR_GCP_PROJECT>:us-central1:<YOUR_CLOUD_SQL_INSTANCE>&socketFactory=com.google.cloud.sql.postgres.SocketFactory` | Env var |
 | `DATABASE_USERNAME` | `postgres` | Env var |
 | `DATABASE_PASSWORD` | *(from Secret Manager)* | Secret: `<YOUR_DB_PASSWORD_SECRET>:latest` |
@@ -221,6 +221,24 @@ gcloud run deploy classroom-clarity-rag \
 
 When only the image changes (no env var or secret updates), a minimal deploy command is sufficient — Cloud Run preserves the existing configuration.
 
+### Alternative: Deploy from Source (no Jib / no Docker)
+
+Cloud Run can build directly from source using Google Cloud Buildpacks. This is useful when Jib is not configured or you want a simpler workflow.
+
+```bash
+gcloud run deploy classroom-clarity-rag \
+  --source=. \
+  --region=us-central1 \
+  --project=<YOUR_GCP_PROJECT> \
+  --set-build-env-vars=GOOGLE_RUNTIME_VERSION=21
+```
+
+**Important notes:**
+- **`GOOGLE_RUNTIME_VERSION=21` is required.** Without it, Buildpacks defaults to the latest Java version (currently 25), which is incompatible with this project's Java 21 target.
+- This is a **build-time** env var (`--set-build-env-vars`), not a runtime env var. It does not affect the container's runtime environment.
+- Source deploys preserve existing runtime env vars and secrets — no need to re-specify them.
+- The source upload respects `.gitignore`. The `.gitignore` must have the `!gradle/wrapper/gradle-wrapper.jar` negation **after** the `*.jar` exclusion rule, or the Gradle wrapper will be excluded and the build will fail.
+
 ---
 
 ## Verification
@@ -241,6 +259,28 @@ Expected:
         "embeddingModel": { "status": "UNKNOWN" },
         "chatModel": { "status": "UNKNOWN" },
         "storage": { "status": "UNKNOWN" }
+    }
+}
+```
+
+### System Limits (public)
+
+```bash
+curl -s https://<YOUR_CLOUD_RUN_URL>/api/v1/limits | python3 -m json.tool
+```
+
+Expected:
+
+```json
+{
+    "documents": {
+        "currentCount": 0,
+        "maxCount": 10,
+        "retentionDays": 1
+    },
+    "rateLimit": {
+        "requestsPerMinute": 60,
+        "queryRequestsPerMinute": 6
     }
 }
 ```

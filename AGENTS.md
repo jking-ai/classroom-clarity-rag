@@ -105,10 +105,12 @@ scripts/                      Shell scripts (start.sh)
 ### Security
 
 - **API key authentication** — all endpoints except health probes require a valid `X-API-Key` header.
-- **Public endpoints** (no API key required): `/api/v1/health`, `/actuator/**`.
+- **Public endpoints** (no API key required, exempt from rate limiting): `/api/v1/health`, `/api/v1/limits`, `/actuator/**`.
 - **CORS** — allowed origins are configured per profile via `app.security.allowed-origins`.
 - **Unauthorized requests** return `401` with the standard `ErrorResponse` schema and error code `UNAUTHORIZED`.
-- Configuration lives in `ApiSecurityProperties`, `ApiKeyAuthenticationFilter`, and `SecurityConfig` (all in `config/`).
+- **Rate limiting** — per-IP token bucket via `RateLimitFilter` (bucket4j). General: 60 req/min, Query: 6 req/min. Configurable via `app.rate-limit.*` properties.
+- **Document limits** — max document count and auto-delete retention enforced via `DocumentProperties` (`app.documents.max-count`, `app.documents.retention-days`).
+- Configuration lives in `ApiSecurityProperties`, `ApiKeyAuthenticationFilter`, `RateLimitFilter`, `DocumentProperties`, `RateLimitProperties`, and `SecurityConfig` (all in `config/`).
 
 ### Error Handling
 
@@ -118,6 +120,7 @@ All errors go through `GlobalExceptionHandler`. Each custom exception maps to a 
 |-----------|-------------|------------|
 | *(missing/invalid API key)* | 401 | `UNAUTHORIZED` |
 | `DocumentNotFoundException` | 404 | `DOCUMENT_NOT_FOUND` |
+| `DocumentLimitExceededException` | 409 | `DOCUMENT_LIMIT_EXCEEDED` |
 | `InvalidFileTypeException` | 400 | `INVALID_FILE_TYPE` |
 | `NoRelevantContextException` | 422 | `NO_RELEVANT_CONTEXT` |
 | `LlmServiceException` | 502 | `LLM_ERROR` |
