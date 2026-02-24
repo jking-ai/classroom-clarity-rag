@@ -34,5 +34,8 @@ models/
 data/
 logs/
 
+# Bruno environments (may contain secrets)
+bruno/environments/production.bru
+
 # Firebase
 firebase-debug.log
