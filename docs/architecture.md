@@ -125,7 +125,7 @@ There are two primary data flows:
 | Vector Search | pgvector | 0.8.0 | Open-source vector similarity search for PostgreSQL; HNSW index support |
 | Object Storage | Google Cloud Storage | -- | Durable storage for raw uploaded PDFs; managed via `com.google.cloud:libraries-bom` |
 | Embedding Model | Vertex AI text-embedding-005 | -- | Google-hosted embedding model; 768 dimensions; no API key management needed with Workload Identity |
-| Chat Model | Vertex AI Gemini 2.0 Flash | -- | Fast, cost-effective generative model suitable for Q&A |
+| Chat Model | Vertex AI Gemini 3.1 Flash-Lite | preview | Fast, cost-effective generative model suitable for grounded Q&A |
 | Containerization | Docker (Jib) | -- | Jib builds optimized container images without a Dockerfile |
 | Deployment | Google Cloud Run | v2 | Serverless container hosting; scales to zero; IAM-integrated |
 | Database Migrations | Flyway | 11.x | Version-controlled schema migrations, managed by Spring Boot BOM |
@@ -150,7 +150,7 @@ There are two primary data flows:
 
 ### 2. Vertex AI vs. OpenAI for Embeddings and Chat
 
-**Decision:** Use Vertex AI (text-embedding-005 and Gemini 2.0 Flash).
+**Decision:** Use Vertex AI (text-embedding-005 and Gemini 3.1 Flash-Lite).
 
 **Rationale:**
 - Keeps the entire stack within GCP, simplifying authentication (Workload Identity, no separate API keys).

@@ -266,7 +266,7 @@ curl -X POST http://localhost:8080/api/v1/query \
     }
   ],
   "metadata": {
-    "model": "gemini-2.0-flash",
+    "model": "gemini-3.1-flash-lite-preview",
     "chunksRetrieved": 2,
     "chunksConsidered": 5,
     "processingTimeMs": 1245
@@ -334,7 +334,7 @@ curl http://localhost:8080/api/v1/health
     "chatModel": {
       "status": "UP",
       "details": {
-        "model": "gemini-2.0-flash",
+        "model": "gemini-3.1-flash-lite-preview",
         "provider": "vertexai"
       }
     },
@@ -370,7 +370,7 @@ curl http://localhost:8080/api/v1/health
     "chatModel": {
       "status": "UP",
       "details": {
-        "model": "gemini-2.0-flash",
+        "model": "gemini-3.1-flash-lite-preview",
         "provider": "vertexai"
       }
     },

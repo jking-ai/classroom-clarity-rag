@@ -86,7 +86,7 @@ public class QueryService {
 
         long processingTimeMs = System.currentTimeMillis() - startTime;
         QueryResponse.Metadata metadata = new QueryResponse.Metadata(
-                "gemini-2.0-flash",
+                "gemini-3.1-flash-lite-preview",
                 sources.size(),
                 request.topK(),
                 processingTimeMs

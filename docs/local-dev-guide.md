@@ -22,7 +22,7 @@ How to set up, run, and test Classroom Clarity RAG on your local machine.
 
 | Mode | Profile | AI Models | Credentials Required |
 |------|---------|-----------|---------------------|
-| **Real AI** | `local-ai` | Vertex AI (Gemini 2.0 Flash + text-embedding-005) | Yes — GCP service account |
+| **Real AI** | `local-ai` | Vertex AI (Gemini 3.1 Flash-Lite + text-embedding-005) | Yes — GCP service account |
 | **Mock AI** | `local` | Deterministic mock embeddings + static chat response | No |
 
 **Use Real AI** (`local-ai`) when you want actual LLM answers and production-quality embeddings. This is the recommended mode for testing the full experience.

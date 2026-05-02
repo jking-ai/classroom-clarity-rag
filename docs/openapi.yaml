@@ -296,7 +296,7 @@ paths:
         1. Embeds the question using text-embedding-005
         2. Performs a cosine similarity search over document chunks using pgvector
         3. Retrieves the most relevant chunks as context
-        4. Sends the question + context to Gemini 2.0 Flash
+        4. Sends the question + context to Gemini 3.1 Flash-Lite
         5. Returns a grounded answer with source citations
       tags: [Query]
       requestBody:
@@ -327,7 +327,7 @@ paths:
                     pageNumber: 1
                     similarityScore: 0.80
                 metadata:
-                  model: gemini-2.0-flash
+                  model: gemini-3.1-flash-lite-preview
                   chunksRetrieved: 1
                   chunksConsidered: 5
                   processingTimeMs: 1588
@@ -580,7 +580,7 @@ components:
       properties:
         model:
           type: string
-          description: The LLM model used to generate the answer (e.g. `gemini-2.0-flash`).
+          description: The LLM model used to generate the answer (e.g. `gemini-3.1-flash-lite-preview`).
         chunksRetrieved:
           type: integer
           description: Number of chunks included in the answer's sources.

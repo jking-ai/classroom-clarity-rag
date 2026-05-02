@@ -6,7 +6,7 @@ This is the source of truth for all AI coding agents working on this project (Cl
 
 ## Project Overview
 
-A semantic Q&A API for school documents, powered by Retrieval-Augmented Generation (RAG). Java 21 / Spring Boot 3.5.x / Spring AI 1.1.x / PostgreSQL 16 with pgvector / Vertex AI (Gemini 2.0 Flash + text-embedding-005).
+A semantic Q&A API for school documents, powered by Retrieval-Augmented Generation (RAG). Java 21 / Spring Boot 3.5.x / Spring AI 1.1.x / PostgreSQL 16 with pgvector / Vertex AI (Gemini 3.1 Flash-Lite + text-embedding-005).
 
 ---
 

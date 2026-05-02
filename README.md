@@ -8,7 +8,7 @@ Teachers, administrators, and parents can ask natural-language questions about s
 
 - **Java 21** / **Spring Boot 3.5.x** / **Spring AI 1.1.x**
 - **PostgreSQL 16** with **pgvector** for vector similarity search
-- **Vertex AI** — text-embedding-005 (embeddings) + Gemini 2.0 Flash (chat)
+- **Vertex AI** — text-embedding-005 (embeddings) + Gemini 3.1 Flash-Lite (chat)
 - **Google Cloud Run** / **Cloud SQL** / **Cloud Storage**
 - **Flyway** for database migrations
 - **Testcontainers** for integration testing

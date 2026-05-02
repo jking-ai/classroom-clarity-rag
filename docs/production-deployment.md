@@ -53,7 +53,7 @@ flowchart TB
 
         subgraph VertexAI["Vertex AI"]
             Embed[text-embedding-005]:::red
-            Chat[Gemini 2.0 Flash]:::red
+            Chat[Gemini 3.1 Flash-Lite]:::red
         end
     end
 

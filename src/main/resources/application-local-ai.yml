@@ -16,7 +16,7 @@ spring:
           location: ${GCP_LOCATION:us-central1}
           chat:
             options:
-              model: gemini-2.0-flash
+              model: gemini-3.1-flash-lite-preview
               max-output-tokens: 1024
         embedding:
           project-id: ${GCP_PROJECT_ID}
