@@ -144,7 +144,7 @@
     <text x="170" y="76" text-anchor="middle" fill="#cbd5e1" font-size="11">LLM receives the context + question and</text>
     <text x="170" y="93" text-anchor="middle" fill="#cbd5e1" font-size="11">generates a grounded answer citing sources</text>
     <rect x="25" y="105" width="290" height="22" rx="4" fill="#1e2d42" stroke="#4a90d9" stroke-width="0.5"/>
-    <text x="170" y="120" text-anchor="middle" fill="#4a90d9" font-size="10" font-weight="500">Vertex AI Gemini 2.0 Flash</text>
+    <text x="170" y="120" text-anchor="middle" fill="#4a90d9" font-size="10" font-weight="500">Vertex AI Gemini 3.1 Flash-Lite</text>
     <rect x="25" y="133" width="290" height="16" rx="3" fill="#141e2e"/>
     <text x="170" y="144" text-anchor="middle" fill="#475569" font-size="9" font-style="italic">"Answer based only on provided context. Reference sources."</text>
   </g>

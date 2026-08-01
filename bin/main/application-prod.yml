@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+
+  jpa:
+    show-sql: false
+
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GCP_PROJECT_ID}
+          location: ${GEMINI_LOCATION:global}
+          api-endpoint: ${GEMINI_API_ENDPOINT:aiplatform.googleapis.com}
+          chat:
+            options:
+              model: gemini-3.1-flash-lite-preview
+              max-output-tokens: 1024
+        embedding:
+          project-id: ${GCP_PROJECT_ID}
+          location: ${GCP_LOCATION:us-central1}
+          text:
+            options:
+              model: text-embedding-005
+
+app:
+  documents:
+    max-count: ${DOCUMENT_MAX_COUNT:10}
+    retention-days: ${DOCUMENT_RETENTION_DAYS:1}
+  security:
+    api-key: ${API_KEY}
+    allowed-origins:
+      - ${FRONTEND_ORIGIN}
+    allowed-ips: ${ALLOWED_IPS:}
+  storage:
+    gcs:
+      bucket-name: ${GCS_BUCKET_NAME}

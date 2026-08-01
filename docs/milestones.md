@@ -160,7 +160,7 @@ This document defines three development phases with concrete deliverables and ac
 #### 2.6 Semantic Query Endpoint
 
 - [x] Implement `QueryService` that: embeds the user's question using the same embedding model, performs a similarity search using the custom repository query, filters results by `similarityThreshold`, optionally filters by `documentIds`, retrieves the top-K chunks.
-- [x] Build a prompt that includes the retrieved chunks as context and the user's question, then send it to Vertex AI Gemini 2.0 Flash via Spring AI's `ChatClient`. Consider using Spring AI 1.1's `RetrievalAugmentationAdvisor` for a modular RAG pipeline.
+- [x] Build a prompt that includes the retrieved chunks as context and the user's question, then send it to Vertex AI Gemini 3.1 Flash-Lite via Spring AI's `ChatClient`. Consider using Spring AI 1.1's `RetrievalAugmentationAdvisor` for a modular RAG pipeline.
 - [x] The prompt template should instruct the model to: answer based only on the provided context, cite which document and section the answer comes from, and say "I don't have enough information to answer that question" if the context is insufficient.
 - [x] Implement `POST /api/v1/query` as specified in api-contracts.md.
 

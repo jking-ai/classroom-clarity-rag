@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: classroom-clarity-rag
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 55MB
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+app:
+  documents:
+    max-count: 10
+    retention-days: 7
+  rate-limit:
+    enabled: true
+    requests-per-minute: 60
+    burst-capacity: 10
+    query-requests-per-minute: 6
+    query-burst-capacity: 3
+  security:
+    api-key: ${API_KEY:dev-local-key-changeme}
+    allowed-origins:
+      - ${ALLOWED_ORIGIN:http://localhost:3000}
+    allowed-ips: []
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
